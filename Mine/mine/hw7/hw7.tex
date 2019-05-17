@@ -1,0 +1,748 @@
+\documentclass[12pt]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{\alph{enumi}.} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework \#7}
+\begin{enumerate}[1.]
+% 1.
+  \item \textbf{(Page 125, chap. 3, \#14)}. This problem focuses on \textbf{\textcolor{blue}{multicollinearity}}.
+    \begin{enumerate}[(a)]
+    % (a)
+      \item Perform the following commands in R:\\[-20pt]
+        \begin{verbatim}
+        > set.seed (1)
+        > x1 = runif (100)
+        > x2 = 0.5*x1 + rnorm(100)/10
+        > y = 2 + 2*x1 + 0.3*x2 + rnorm(100)
+        \end{verbatim}
+        \vspace*{-20pt}
+        The last line corresponds to creating a linear model in which $y$ is a function of $x_1$ and $x_2$. Write out the form of the linear model. What are the regression coefficients?\\[10pt]
+        Form of the model:
+        $$Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \varepsilon$$
+        $\beta_1 = 2$ and $\beta_2 = 0.3$ are the regression coefficients.
+
+    % (b)
+      \item What is the correlation between $x_1$ and $x_2$? Create a scatterplot displaying the relationship between the variables.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{cor}\hlstd{(x1,x2)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.8351212
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(x1,x2)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=0.7\linewidth]{figure/1_b-1} 
+
+\end{knitrout}
+
+    % (c)
+      \item Using this data, fit a least squares regression to predict y using $x_1$ and $x_2$. Describe the results obtained. What are $\hat{\beta}_0$, $\hat{\beta}_1$, and $\hat{\beta}_2$? What are the true $\beta_0$, $\beta_1$, and $\beta_2$? Can you reject the null hypothesis $H_0 : \beta_1 = 0$? How about the null hypothesis $H_0 : \beta_2 = 0$?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{reg} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x1} \hlopt{+} \hlstd{x2)}
+\hlkwd{summary}\hlstd{(reg)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x1 + x2)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.8311 -0.7273 -0.0537  0.6338  2.3359 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   2.1305     0.2319   9.188 7.61e-15 ***
+## x1            1.4396     0.7212   1.996   0.0487 *  
+## x2            1.0097     1.1337   0.891   0.3754    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.056 on 97 degrees of freedom
+## Multiple R-squared:  0.2088,	Adjusted R-squared:  0.1925 
+## F-statistic:  12.8 on 2 and 97 DF,  p-value: 1.164e-05
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The estimation $\hat{\beta}_0 = 2.1305$, $\hat{\beta}_1 = 1.4396$, and $\hat{\beta}_2 = 1.0097$. And the true $\beta_0 = 2$, $\beta_1 = 2$, and $\beta_2 = 0.3$. Under the significance level of 0.05, I can reject the null hypothesis $H_0 : \beta_1 = 0$ but I cannot reject the null hypothesis $H_0 : \beta_2 = 0$.
+
+    % (d)
+      \item Now fit a least squares regression to predict $y$ using only $x_1$. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_1 = 0$?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{reg.x1} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x1)}
+\hlkwd{summary}\hlstd{(reg.x1)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x1)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.89495 -0.66874 -0.07785  0.59221  2.45560 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   2.1124     0.2307   9.155 8.27e-15 ***
+## x1            1.9759     0.3963   4.986 2.66e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.055 on 98 degrees of freedom
+## Multiple R-squared:  0.2024,	Adjusted R-squared:  0.1942 
+## F-statistic: 24.86 on 1 and 98 DF,  p-value: 2.661e-06
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      I can reject the null hypothesis $H_0 : \beta_1 = 0$.
+
+    % (e)
+      \item Now fit a least squares regression to predict $y$ using only $x_2$. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_2  = 0$?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{reg.x2} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x2)}
+\hlkwd{summary}\hlstd{(reg.x2)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x2)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.62687 -0.75156 -0.03598  0.72383  2.44890 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   2.3899     0.1949   12.26  < 2e-16 ***
+## x2            2.8996     0.6330    4.58 1.37e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.072 on 98 degrees of freedom
+## Multiple R-squared:  0.1763,	Adjusted R-squared:  0.1679 
+## F-statistic: 20.98 on 1 and 98 DF,  p-value: 1.366e-05
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      I can reject the null hypothesis $H_0 : \beta_2 = 0$.
+
+    % (f)
+      \item Do the results obtained in (c)–(e) contradict each other? Explain your answer.\\[10pt]
+      No, given $x_1$ and $x_2$ collinear, including both of them in the model will reduce the power of t-test. Also they will diminish the explanatory effect of each other. So it makes sense to have the predictor significant in the model including only one of them, while at least one of them is not signficant in the model including both of them.
+
+    % (g)
+      \item Now suppose we obtain one additional observation, which was unfortunately mismeasured. Use the following R code.\\[-20pt]
+        \begin{verbatim}
+        > x1=c(x1, 0.1)
+        > x2=c(x2, 0.8)
+        > y=c(y,6)
+        \end{verbatim}
+        \vspace*{-20pt}
+        Re-fit the linear models from (c) to (e) using this new data. What effect does this new observation have on the each of the models? In each model, is this observation an outlier? A high-leverage point? Both? Explain your answers. How do the slopes from all the considered models react on the newly added data point?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{x1}\hlkwb{=}\hlkwd{c}\hlstd{(x1,} \hlnum{0.1}\hlstd{)}
+\hlstd{x2}\hlkwb{=}\hlkwd{c}\hlstd{(x2,} \hlnum{0.8}\hlstd{)}
+\hlstd{y}\hlkwb{=}\hlkwd{c}\hlstd{(y,}\hlnum{6}\hlstd{)}
+\hlstd{reg} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x1} \hlopt{+} \hlstd{x2)}
+\hlstd{reg.x1} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x1)}
+\hlstd{reg.x2} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x2)}
+\hlkwd{summary}\hlstd{(reg)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x1 + x2)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.73348 -0.69318 -0.05263  0.66385  2.30619 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   2.2267     0.2314   9.624 7.91e-16 ***
+## x1            0.5394     0.5922   0.911  0.36458    
+## x2            2.5146     0.8977   2.801  0.00614 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.075 on 98 degrees of freedom
+## Multiple R-squared:  0.2188,	Adjusted R-squared:  0.2029 
+## F-statistic: 13.72 on 2 and 98 DF,  p-value: 5.564e-06
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(reg.x1)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x1)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.8897 -0.6556 -0.0909  0.5682  3.5665 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   2.2569     0.2390   9.445 1.78e-15 ***
+## x1            1.7657     0.4124   4.282 4.29e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.111 on 99 degrees of freedom
+## Multiple R-squared:  0.1562,	Adjusted R-squared:  0.1477 
+## F-statistic: 18.33 on 1 and 99 DF,  p-value: 4.295e-05
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(reg.x2)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x2)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.64729 -0.71021 -0.06899  0.72699  2.38074 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   2.3451     0.1912  12.264  < 2e-16 ***
+## x2            3.1190     0.6040   5.164 1.25e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.074 on 99 degrees of freedom
+## Multiple R-squared:  0.2122,	Adjusted R-squared:  0.2042 
+## F-statistic: 26.66 on 1 and 99 DF,  p-value: 1.253e-06
+\end{verbatim}
+\begin{alltt}
+\hlcom{# plot}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{))}
+\hlkwd{plot}\hlstd{(x1,x2)}
+\hlkwd{points}\hlstd{(}\hlkwc{x} \hlstd{=} \hlnum{0.1}\hlstd{,} \hlkwc{y} \hlstd{=} \hlnum{0.8}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{plot}\hlstd{(x1,y)}
+\hlkwd{points}\hlstd{(}\hlkwc{x} \hlstd{=} \hlnum{0.1}\hlstd{,} \hlkwc{y} \hlstd{=} \hlnum{6}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{plot}\hlstd{(x2,y)}
+\hlkwd{points}\hlstd{(}\hlkwc{x} \hlstd{=} \hlnum{0.8}\hlstd{,} \hlkwc{y} \hlstd{=} \hlnum{6}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlcom{# outlier}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{3}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/1_g-1} 
+\begin{kframe}\begin{alltt}
+\hlstd{t.reg} \hlkwb{<-} \hlkwd{rstudent}\hlstd{(reg)}
+\hlstd{t1.reg} \hlkwb{<-} \hlkwd{rstudent}\hlstd{(reg.x1)}
+\hlstd{t2.reg} \hlkwb{<-} \hlkwd{rstudent}\hlstd{(reg.x2)}
+\hlkwd{plot}\hlstd{(t.reg);} \hlkwd{plot}\hlstd{(t1.reg);} \hlkwd{plot}\hlstd{(t2.reg)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/1_g-2} 
+\begin{kframe}\begin{alltt}
+\hlcom{# influential}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{3}\hlstd{))}
+\hlkwd{plot}\hlstd{(}\hlkwd{influence}\hlstd{(reg)}\hlopt{$}\hlstd{hat)}
+\hlkwd{plot}\hlstd{(}\hlkwd{influence}\hlstd{(reg.x1)}\hlopt{$}\hlstd{hat)}
+\hlkwd{plot}\hlstd{(}\hlkwd{influence}\hlstd{(reg.x2)}\hlopt{$}\hlstd{hat)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/1_g-3} 
+
+\end{knitrout}
+    It is not an outlier or high-leverage point in model (d) and (e). But it is both an outlier and influential case in model (c) and (d). The estimated slope of model (d) and (e) does not change much, but the estimated slopes of model (c) change very much.
+
+    % (h)
+      \item What are standard errors of estimated regression slopes in (a), (d), and (e)? Which models produce more stable and therefore, more reliable estimates?\\
+      \begin{center}
+      \begin{tabular}{|c|c|c|}
+        \hline\\
+        model & $Var(\beta_1)$ & $Var(\beta_2)$\\
+        \hline\\
+        (c) & 0.7212 & 1.1337\\
+        (d) & 0.3963 & \\
+        (e) & & 0.6330 \\
+        \hline
+      \end{tabular}
+      \end{center}
+      Model (d) and (e) produce more stable estimates than model (c).
+    % (i)
+      \item Compute both VIF in question (a) and relate them to your answer to question (h).
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{car}\hlopt{::}\hlkwd{vif}\hlstd{(reg)}
+\end{alltt}
+\begin{verbatim}
+##       x1       x2 
+## 2.204867 2.204867
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The collinearity betwenn $x_1$ and $x_2$ cause the inflation of variance in model (c), so we have vif of $x_1$ and $x_2$ 1.76 greater than 1. Removing any of them can reduce the variance of model (c). Thus model (d) and (e) have smaller variance than (c).
+    \end{enumerate}
+
+% 2.
+  \item \textbf{(Chap. 6, \# 2, p.259)} Consider three methods of fitting a linear regression model - (a) lasso, (b) ridge regression, and (c) fitting nonlinear trends. For each method, choose the right answer, comparing it with the least squares regression:
+    \begin{enumerate}[i.]
+    % i.
+      \item The method is more flexible and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance.
+    % ii.
+      \item The method is more flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias.
+    % iii.
+      \item The method is less flexible and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance.
+    % iv
+      \item The method is less flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias.
+    \end{enumerate}
+    \begin{enumerate}[(a)]
+      \item iii.
+      \item iii.
+      \item ii.
+    \end{enumerate}
+
+% 3.
+  \item \textbf{(Chap. 6, $\approx$\# 6, p.261)} Ridge regression minimizes
+    \begin{equation}
+      \sum^{n}_{i=1}(Y_i-\beta_0-X_{i1}\beta_1-\cdots-X_{ip}\beta_p)^2 + \lambda \sum^{p}_{j=1}\beta_j^2
+    \end{equation}
+    whereas lasso minimizes\\
+    \begin{equation}
+      \sum^{n}_{i=1}(Y_i-\beta_0-X_{i1}\beta_1-\cdots-X_{ip}\beta_p)^2 + \lambda \sum^{p}_{j=1}|\beta_j|\\
+    \end{equation}
+    Consider a "toy" example, where $n = p = 1$, $X = 1$, and the intercept is omitted from the model. Then $RSS$ reduces to $RSS = (Y - \beta)^2$.
+    \begin{enumerate}[(a)]
+    % (a)
+      \item Choose some $Y$ and $\lambda$, plot (1) and (2) as functions of $\beta$, and find their minima on these graphs. Verify that these minima are attained at
+      \begin{equation}
+        \hspace*{-50pt}\hat{\beta}_{ridge} = \frac{Y}{1+\lambda}\quad \text{and}\quad \hat{\beta}_{lasso} =\begin{cases}
+          Y - \lambda/2 &\text{if} \quad Y > \lambda/2\\
+          Y + \lambda/2 &\text{if} \quad Y < -\lambda/2\\
+          0 &\text{if} \quad |Y| < \lambda/2
+        \end{cases}
+      \end{equation}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{X} \hlkwb{<-} \hlnum{1}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{))}
+\hlstd{Y} \hlkwb{<-} \hlnum{3}
+\hlstd{lambda} \hlkwb{<-} \hlnum{1}
+\hlkwd{curve}\hlstd{((Y} \hlopt{-} \hlstd{beta)}\hlopt{^}\hlnum{2} \hlopt{+} \hlstd{lambda}\hlopt{*}\hlstd{beta}\hlopt{^}\hlnum{2}\hlstd{,} \hlopt{-}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{,} \hlkwc{col} \hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{xname} \hlstd{=} \hlstr{"beta"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"beta"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Y=3, lambda=1"}\hlstd{)} \hlcom{# ridge}
+\hlkwd{curve}\hlstd{((Y} \hlopt{-} \hlstd{beta)}\hlopt{^}\hlnum{2} \hlopt{+} \hlstd{lambda}\hlopt{*}\hlkwd{abs}\hlstd{(beta),} \hlopt{-}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{,} \hlkwc{col} \hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{xname} \hlstd{=} \hlstr{"beta"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"beta"}\hlstd{,} \hlkwc{add} \hlstd{=} \hlnum{TRUE}\hlstd{)} \hlcom{# lasso}
+\hlstd{Y} \hlkwb{<-} \hlnum{3}
+\hlstd{lambda} \hlkwb{<-} \hlnum{3}
+\hlkwd{curve}\hlstd{((Y} \hlopt{-} \hlstd{beta)}\hlopt{^}\hlnum{2} \hlopt{+} \hlstd{lambda}\hlopt{*}\hlstd{beta}\hlopt{^}\hlnum{2}\hlstd{,} \hlopt{-}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{,} \hlkwc{col} \hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{xname} \hlstd{=} \hlstr{"beta"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"beta"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Y=3, lambda=3"}\hlstd{)} \hlcom{# ridge}
+\hlkwd{curve}\hlstd{((Y} \hlopt{-} \hlstd{beta)}\hlopt{^}\hlnum{2} \hlopt{+} \hlstd{lambda}\hlopt{*}\hlkwd{abs}\hlstd{(beta),} \hlopt{-}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{,} \hlkwc{col} \hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{xname} \hlstd{=} \hlstr{"beta"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"beta"}\hlstd{,} \hlkwc{add} \hlstd{=} \hlnum{TRUE}\hlstd{)} \hlcom{# lasso}
+\hlstd{Y} \hlkwb{<-} \hlnum{1}
+\hlstd{lambda} \hlkwb{<-} \hlnum{3}
+\hlkwd{curve}\hlstd{((Y} \hlopt{-} \hlstd{beta)}\hlopt{^}\hlnum{2} \hlopt{+} \hlstd{lambda}\hlopt{*}\hlstd{beta}\hlopt{^}\hlnum{2}\hlstd{,} \hlopt{-}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{,} \hlkwc{col} \hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{xname} \hlstd{=} \hlstr{"beta"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"beta"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Y=1, lambda=3"}\hlstd{)} \hlcom{# ridge}
+\hlkwd{curve}\hlstd{((Y} \hlopt{-} \hlstd{beta)}\hlopt{^}\hlnum{2} \hlopt{+} \hlstd{lambda}\hlopt{*}\hlkwd{abs}\hlstd{(beta),} \hlopt{-}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{,} \hlkwc{col} \hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{xname} \hlstd{=} \hlstr{"beta"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"beta"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"lasso"}\hlstd{,} \hlkwc{add} \hlstd{=} \hlnum{TRUE}\hlstd{)} \hlcom{# lasso}
+\hlstd{Y} \hlkwb{<-} \hlnum{2}
+\hlstd{lambda} \hlkwb{<-} \hlnum{2}
+\hlkwd{curve}\hlstd{((Y} \hlopt{-} \hlstd{beta)}\hlopt{^}\hlnum{2} \hlopt{+} \hlstd{lambda}\hlopt{*}\hlstd{beta}\hlopt{^}\hlnum{2}\hlstd{,} \hlopt{-}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{,} \hlkwc{col} \hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{xname} \hlstd{=} \hlstr{"beta"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"beta"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Y=2, lambda=2"}\hlstd{)} \hlcom{# ridge}
+\hlkwd{curve}\hlstd{((Y} \hlopt{-} \hlstd{beta)}\hlopt{^}\hlnum{2} \hlopt{+} \hlstd{lambda}\hlopt{*}\hlkwd{abs}\hlstd{(beta),} \hlopt{-}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{,} \hlkwc{col} \hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{xname} \hlstd{=} \hlstr{"beta"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"beta"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"lasso"}\hlstd{,} \hlkwc{add} \hlstd{=} \hlnum{TRUE}\hlstd{)} \hlcom{# lasso}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/3_a-1} 
+
+\end{knitrout}
+
+
+    % (b)
+      \item Now choose some value of $Y$ and plot ridge regression and lasso solutions (3) on the same axes, as functions of $\lambda$. Observe how ridge regression keeps a slope whereas lasso sends the slope to 0 when the penalty term is high.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ridge.beta} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{l}\hlstd{)\{}\hlkwd{return}\hlstd{( Y}\hlopt{/}\hlstd{(}\hlnum{1}\hlopt{+}\hlstd{l) )\}}
+\hlstd{lasso.beta} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{l}\hlstd{)\{} \hlkwd{return}\hlstd{( (Y}\hlopt{-}\hlstd{l}\hlopt{/}\hlnum{2}\hlstd{)}\hlopt{*}\hlstd{(Y} \hlopt{>} \hlstd{l}\hlopt{/}\hlnum{2}\hlstd{)} \hlopt{+} \hlstd{(Y}\hlopt{+}\hlstd{l}\hlopt{/}\hlnum{2}\hlstd{)}\hlopt{*}\hlstd{(Y} \hlopt{< -}\hlstd{l}\hlopt{/}\hlnum{2}\hlstd{))} \hlopt{+} \hlnum{0}\hlopt{*}\hlstd{(}\hlkwd{abs}\hlstd{(Y)} \hlopt{<} \hlstd{l}\hlopt{/}\hlnum{2}\hlstd{)\}}
+\hlcom{# plot}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{))}
+\hlstd{Y} \hlkwb{<-} \hlnum{1}
+\hlkwd{curve}\hlstd{( ridge.beta,} \hlnum{0}\hlstd{,} \hlnum{20}\hlstd{,} \hlkwc{col}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{0.001}\hlstd{,}\hlnum{1}\hlstd{),} \hlkwc{xlab}\hlstd{=}\hlstr{"lambda"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Y=1"} \hlstd{)}
+\hlkwd{curve}\hlstd{( lasso.beta,} \hlnum{0}\hlstd{,} \hlnum{20}\hlstd{,} \hlkwc{col}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{add}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\hlstd{Y} \hlkwb{<-} \hlnum{3}
+\hlkwd{curve}\hlstd{( ridge.beta,} \hlnum{0}\hlstd{,} \hlnum{20}\hlstd{,} \hlkwc{col}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{0.001}\hlstd{,}\hlnum{1}\hlstd{),} \hlkwc{xlab}\hlstd{=}\hlstr{"lambda"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Y=3"} \hlstd{)}
+\hlkwd{curve}\hlstd{( lasso.beta,} \hlnum{0}\hlstd{,} \hlnum{20}\hlstd{,} \hlkwc{col}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{add}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/3_b-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{dev.off}\hlstd{()}
+\end{alltt}
+\begin{verbatim}
+## null device 
+##           1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+    \end{enumerate}
+% 4.
+  \item \textbf{(Simulation project - Chap. 6, \# 8, p.262)}\\
+  In this exercise, we will generate simulated data, and will then use this data to perform
+best subset selection.
+    \begin{enumerate}[(a)]
+    % (a)
+      \item Use the \texttt{rnorm()} function to generate a predictor $X$ and a noise vector $\varepsilon$ of length
+$n = 100$ (you can refer to our lab "First steps in R" for this command).
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{set.seed}\hlstd{(}\hlnum{666}\hlstd{)}
+\hlstd{x} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{100}\hlstd{)}
+\hlstd{epsi} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{100}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+    % (b)
+      \item Generate a response vector Y according to the model
+      $$Y=\beta_0 + \beta_1X + \beta_2X^2 + \beta_3X^3 + \varepsilon$$
+      where $\beta_0$, $\beta_1$, $\beta_2$, and $\beta_3$ are constants of your choice.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{b.0} \hlkwb{<-} \hlstd{b.1} \hlkwb{<-} \hlstd{b.2} \hlkwb{<-} \hlstd{b.3} \hlkwb{<-} \hlnum{2}
+\hlstd{y} \hlkwb{<-} \hlstd{b.0} \hlopt{+} \hlstd{b.1}\hlopt{*}\hlstd{x} \hlopt{+} \hlstd{b.2}\hlopt{^}\hlnum{2}\hlopt{*}\hlstd{x} \hlopt{+} \hlstd{b.3}\hlopt{^}\hlnum{3}\hlopt{*}\hlstd{x} \hlopt{+} \hlstd{epsi}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+    % (c)
+      \item Use stepwise selection with \texttt{step} for variable selection. How does your answer compare to the results in (c)?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{df} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(x,y)}
+\hlstd{null} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlnum{1}\hlstd{,} \hlkwc{data} \hlstd{=df)}
+\hlstd{full} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x} \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{2}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{3}\hlstd{)} \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{4}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{5}\hlstd{)}\hlopt{+}
+             \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{6}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{7}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{8}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{9}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{10}\hlstd{),} \hlkwc{data} \hlstd{= df)}
+\hlkwd{step}\hlstd{( null,}\hlkwc{scope}\hlstd{=}\hlkwd{list}\hlstd{(}\hlkwc{lower}\hlstd{=null,} \hlkwc{upper}\hlstd{=full),} \hlkwc{direction}\hlstd{=}\hlstr{"forward"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## Start:  AIC=538.01
+## y ~ 1
+## 
+##           Df Sum of Sq     RSS    AIC
+## + x        1   21151.5   123.4  25.05
+## + I(x^3)   1   13969.5  7305.5 433.12
+## + I(x^5)   1    7012.7 14262.3 500.02
+## + I(x^7)   1    3964.6 17310.3 519.39
+## + I(x^9)   1    2782.2 18492.7 526.00
+## + I(x^10)  1    1698.5 19576.4 531.69
+## + I(x^8)   1    1498.0 19777.0 532.71
+## + I(x^6)   1    1108.5 20166.4 534.66
+## + I(x^4)   1     531.8 20743.1 537.48
+## <none>                 21274.9 538.01
+## + I(x^2)   1     131.4 21143.6 539.39
+## 
+## Step:  AIC=25.05
+## y ~ x
+## 
+##           Df Sum of Sq    RSS    AIC
+## + I(x^3)   1    7.0862 116.34 21.134
+## + I(x^5)   1    6.1138 117.31 21.966
+## + I(x^7)   1    5.4299 118.00 22.547
+## + I(x^6)   1    5.4248 118.00 22.552
+## + I(x^8)   1    5.3370 118.09 22.626
+## + I(x^10)  1    5.1960 118.23 22.745
+## + I(x^9)   1    5.1257 118.30 22.805
+## + I(x^4)   1    5.0708 118.35 22.851
+## + I(x^2)   1    3.4906 119.93 24.177
+## <none>                 123.42 25.046
+## 
+## Step:  AIC=21.13
+## y ~ x + I(x^3)
+## 
+##           Df Sum of Sq    RSS    AIC
+## <none>                 116.34 21.134
+## + I(x^2)   1   1.13273 115.21 22.155
+## + I(x^4)   1   0.72746 115.61 22.506
+## + I(x^6)   1   0.37907 115.96 22.807
+## + I(x^8)   1   0.19718 116.14 22.964
+## + I(x^10)  1   0.11515 116.22 23.035
+## + I(x^5)   1   0.02569 116.31 23.111
+## + I(x^9)   1   0.00447 116.33 23.130
+## + I(x^7)   1   0.00081 116.34 23.133
+## 
+## Call:
+## lm(formula = y ~ x + I(x^3), data = df)
+## 
+## Coefficients:
+## (Intercept)            x       I(x^3)  
+##      1.9169      13.8510       0.1183
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The second order term $x^2$ is removed from the model. But we keep $x_2$ as long as we want to keep the higher order term $x_3$.
+    % (d)
+      \item Now fit a lasso model with the same predictors. Use cross-validation to select the optimal value of $\lambda$. Create plots of the cross-validation error as a function of $\lambda$. Report the resulting coefficient estimates, and discuss the results obtained. Which predictors got eliminated by lasso?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{x.mat} \hlkwb{<-} \hlkwd{model.matrix}\hlstd{(full)}
+\hlstd{lasso} \hlkwb{<-} \hlstd{glmnet}\hlopt{::}\hlkwd{cv.glmnet}\hlstd{(x.mat,y,}\hlkwc{alpha} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{lambda} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{10}\hlstd{,}\hlnum{0.01}\hlstd{))}
+\hlstd{lasso}\hlopt{$}\hlstd{lambda.min}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(lasso)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=0.7\linewidth]{figure/4_d-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{predict}\hlstd{( lasso, lasso}\hlopt{$}\hlstd{lambda.min,} \hlkwc{type}\hlstd{=}\hlstr{"coefficients"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 12 x 1 sparse Matrix of class "dgCMatrix"
+##                         1
+## (Intercept)  1.9970539230
+## (Intercept)  .           
+## x           13.5607612237
+## I(x^2)      -0.1083057380
+## I(x^3)       0.3896222751
+## I(x^4)       0.0438761238
+## I(x^5)      -0.0293403843
+## I(x^6)      -0.0042655290
+## I(x^7)      -0.0035394067
+## I(x^8)      -0.0010009796
+## I(x^9)      -0.0002439069
+## I(x^10)     -0.0001101012
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The best $\lambda$ derived from cross validation is 0, so no predictors got eliminated by lasso.
+    % (e)
+      \item Now generate a response vector Y according to the model
+      $$Y=\beta_0 + \beta_7X^7 +\varepsilon$$
+      and perform best subset selection and the lasso. Discuss the results.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{b.7} \hlkwb{<-} \hlnum{2}
+\hlstd{y} \hlkwb{<-} \hlstd{b.0} \hlopt{+} \hlstd{b.7}\hlopt{^}\hlnum{7}\hlopt{*}\hlstd{x} \hlopt{+} \hlstd{epsi}
+\hlstd{bestsub} \hlkwb{<-} \hlstd{leaps}\hlopt{::}\hlkwd{regsubsets}\hlstd{(y} \hlopt{~} \hlstd{x} \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{2}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{3}\hlstd{)} \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{4}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{5}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{6}\hlstd{)}
+                             \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{7}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{8}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{9}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{10}\hlstd{),} \hlkwc{data} \hlstd{= df)}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{3}\hlstd{))}
+\hlkwd{plot}\hlstd{(}\hlkwd{summary}\hlstd{(bestsub)}\hlopt{$}\hlstd{adjr2,} \hlkwc{main} \hlstd{=} \hlstr{"adjr2"}\hlstd{)}
+\hlkwd{lines}\hlstd{(}\hlkwd{summary}\hlstd{(bestsub)}\hlopt{$}\hlstd{adjr2)}
+\hlkwd{plot}\hlstd{(}\hlkwd{summary}\hlstd{(bestsub)}\hlopt{$}\hlstd{cp,} \hlkwc{main} \hlstd{=} \hlstr{"cp"}\hlstd{)}
+\hlkwd{lines}\hlstd{(}\hlkwd{summary}\hlstd{(bestsub)}\hlopt{$}\hlstd{cp)}
+\hlkwd{plot}\hlstd{(}\hlkwd{summary}\hlstd{(bestsub)}\hlopt{$}\hlstd{bic,} \hlkwc{main} \hlstd{=} \hlstr{"bic"}\hlstd{)}
+\hlkwd{lines}\hlstd{(}\hlkwd{summary}\hlstd{(bestsub)}\hlopt{$}\hlstd{bic)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/4_e-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{which.max}\hlstd{(}\hlkwd{summary}\hlstd{(bestsub)}\hlopt{$}\hlstd{adjr2)}
+\end{alltt}
+\begin{verbatim}
+## [1] 6
+\end{verbatim}
+\begin{alltt}
+\hlkwd{which.min}\hlstd{(}\hlkwd{summary}\hlstd{(bestsub)}\hlopt{$}\hlstd{cp)}
+\end{alltt}
+\begin{verbatim}
+## [1] 2
+\end{verbatim}
+\begin{alltt}
+\hlkwd{which.min}\hlstd{(}\hlkwd{summary}\hlstd{(bestsub)}\hlopt{$}\hlstd{bic)}
+\end{alltt}
+\begin{verbatim}
+## [1] 2
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(}\hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x} \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{2}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{3}\hlstd{)} \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{4}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{5}\hlstd{)}\hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{6}\hlstd{),}\hlkwc{data} \hlstd{=df))}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + I(x^6), 
+##     data = df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.62261 -0.74327  0.01143  0.80274  2.82978 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  2.05283    0.18606  11.033   <2e-16 ***
+## x           13.49669    0.35343  38.188   <2e-16 ***
+## I(x^2)      -0.33301    0.43557  -0.765    0.446    
+## I(x^3)       0.54101    0.33154   1.632    0.106    
+## I(x^4)       0.18609    0.21612   0.861    0.391    
+## I(x^5)      -0.08400    0.06413  -1.310    0.193    
+## I(x^6)      -0.03102    0.02908  -1.067    0.289    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.102 on 93 degrees of freedom
+## Multiple R-squared:  0.9947,	Adjusted R-squared:  0.9943 
+## F-statistic:  2902 on 6 and 93 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(}\hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x} \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{2}\hlstd{),}\hlkwc{data} \hlstd{=df))}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x + I(x^2), data = df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.74071 -0.70677  0.02491  0.70566  2.45316 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  2.05946    0.13876   14.84   <2e-16 ***
+## x           14.18762    0.10880  130.40   <2e-16 ***
+## I(x^2)      -0.13265    0.07895   -1.68   0.0961 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.112 on 97 degrees of freedom
+## Multiple R-squared:  0.9944,	Adjusted R-squared:  0.9942 
+## F-statistic:  8555 on 2 and 97 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\begin{alltt}
+\hlcom{# y ~ x^2}
+\hlstd{reg} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x} \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{2}\hlstd{),}\hlkwc{data} \hlstd{=df)}
+\hlstd{x.mat} \hlkwb{<-} \hlkwd{model.matrix}\hlstd{(reg)}
+\hlstd{lasso} \hlkwb{<-} \hlstd{glmnet}\hlopt{::}\hlkwd{cv.glmnet}\hlstd{(x.mat,y,}\hlkwc{alpha} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{lambda} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{10}\hlstd{,}\hlnum{0.01}\hlstd{))}
+\hlkwd{predict}\hlstd{( lasso, lasso}\hlopt{$}\hlstd{lambda.min,} \hlkwc{type}\hlstd{=}\hlstr{"coefficients"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 4 x 1 sparse Matrix of class "dgCMatrix"
+##                       1
+## (Intercept)   2.0529777
+## (Intercept)   .        
+## x           127.8161495
+## I(x^2)       -0.1500017
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The best subset selection algorithm yields the model $Y = \beta_0 + \beta_1X_1 + \beta_2X_2^2 + \varepsilon$. The cross validation for lasso suggests no to drop any estimator of the best subset model.
+    \end{enumerate}
+  \end{enumerate}
+\end{document}
+
+

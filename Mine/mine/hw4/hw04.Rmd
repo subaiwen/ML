@@ -1,0 +1,369 @@
+---
+title: \Large\textbf{Homework \#4}
+fontsize: 11pt
+author: \normalsize{Zhijian Liu}
+geometry: margin=0.7in
+output: 
+  pdf_document: 
+    highlight: haddock
+    toc_depth: 1
+    df_print: kable
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+invisible(lapply(c("knitr","kableExtra","tidyverse","ISLR"),library, character.only=TRUE))
+```
+\vspace{-0.5cm}
+\textbf{\textcolor{red}{Linear and Quadratic Discriminant Analysis}}  
+**1. Pages 169–170, chap. 4, #5.**  We now examine the differences between LDA and QDA.
+\begin{enumerate}
+ \item [(a)] If the Bayes decision boundary is linear, do we expect LDA or QDA to perform better on the training set? On the test set?\\ \rule{0cm}{0pt}
+ \hspace{-17pt}$\blacksquare$  We expect QDA to perform better on the training, since it is a more flexible method. However, on the test set, LDA would perform better, because it is unbias when the true boundary is linear. Also it produces a lower variance.
+
+ \item [(b)] If the Bayes decision boundary is non-linear, do we expect LDA or QDA to perform better on the training set? On the test set?\\ \rule{0cm}{0pt}
+ \hspace{-17pt}$\blacksquare$ QDA would perform better on the training set as well as the test set. Becasue the decision boudary is non-linear, it is more accurately approximated by QDA than LDA.
+ \item [(c)] In general, as the sample size n increases, do we expect the test prediction accuracy of QDA relative to LDA to improve, decline, or be unchanged? Why?\\ \rule{0cm}{0pt}
+ \hspace{-17pt}$\blacksquare$ Compared to LDA, the test prediction accuracy of QDA would improve as the sample size increases. In the case, the variance of the classifier is not a major concern and QDA would fit the data better.
+ \item [(d)] True or False: Even if the Bayes decision boundary for a given problem is linear, we will probably achieve a superior test error rate using QDA rather than LDA because QDA is flexible enough to model a linear decision boundary. Justify your answer.\\ \rule{0cm}{0pt}
+ \hspace{-17pt}$\blacksquare$ False. If the true decision boundary is linear, QDA will overfit the data. We will achieve a higher test error rate using QDA, while LDA is unbiased estimation.
+ 
+\end{enumerate}
+
+**2. Page 170, chap. 4, #7.**  Suppose that we wish to predict whether a given stock will issue a dividend this year (“Yes” or “No”) based on X, last year’s percent profit. We examine a large number of companies and discover that the mean value of X for companies that issued a dividend was $\bar{X}$ = 10, while the mean for those that didn’t was $\bar{X}$ = 0. In addition, the variance of X for these two sets of companies was ${\sigma}^2$ = 36. Finally, 80% of companies issued dividends. Assuming that X follows a normal distribution, predict the probability that a company will issue a dividend this year given that its percentage profit was X = 4 last year. \rule{0cm}{0pt}
+ \vspace{-0.5cm}
+ \hspace{-17pt}$\blacksquare$ Given $\pi_{yes} = 0.8$, $\pi_{no} = 1-\pi_{yes}=0.8$ $\mu_{yes} = 10$, $\mu_{no} = 0$ and $\sigma^2=36$
+ \begin{align*}
+ P(dividend = yes|X=4) &= \frac{\pi_{yes}\cdot f(X = 4|dividence=yes)}{p(X = 4)}\\
+                       &= \frac{\pi_{yes} \frac{1}{\sqrt{2\pi}\sigma}exp{\{-\frac{(4 - \mu_{yes})^2}{2\sigma^2}\}}}{\pi_{yes} \frac{1}{\sqrt{2\pi}\sigma}exp{\{-\frac{(4 - \mu_{yes})^2}{2\sigma^2}\}} + \pi_{no}\frac{1}{\sqrt{2\pi}\sigma}exp{\{-\frac{(4 - \mu_{no})^2}{2\sigma^2}\}}}\\
+                       &= \frac{0.8 \frac{1}{\sqrt{2\pi}\sigma}exp{\{-\frac{(4 - 10)^2}{2\cdot 36}\}}}{0.8 \frac{1}{\sqrt{2\pi}\sigma}exp{\{-\frac{(4 - 10)^2}{2\cdot 36}\}} + 0.2\frac{1}{\sqrt{2\pi}\sigma}exp{\{-\frac{(4 - 0)^2}{2\cdot 36}\}}}\\
+                       &= \frac{0.4852245}{0.4852245 + 0.1601475}\\
+                       &= 0.7518525
+ \end{align*}
+ The probability that a company will issue a dividend this year given that its percentage profit was X = 4 last year is 0.7518525.
+ 
+ 
+\textbf{\textcolor{red}{Projects}}  
+**3. Page 171, chap. 4, #10(b-d, e-h + additional i, j).**  Here we try to predict behavior of the market next week. The *Weekly* data set contains 1089 observations with the following 9 variables.  
+\vspace{-12pt}
+\begin{center}
+\begin{tabular}{ | p{1.5cm} | p{15cm}| }
+ \hline
+ Year & The year that the observation was recorded \\ 
+ \hline
+ Lag1 & Percentage return for previous week \\  
+ \hline
+ Lag2 & Percentage return for 2 weeks previous \\
+ \hline
+ Lag3 & Percentage return for 3 weeks previous \\
+ \hline
+ Lag4 & Percentage return for 4 weeks previous \\
+ \hline
+ Lag5 & Percentage return for 5 weeks previous \\
+ \hline
+ Volume & Volume of shares traded (average number of daily shares traded in billions) \\
+ \hline
+ Today & Percentage return for this week \\
+ \hline
+ Direction & A factor with levels Down and Up indicating whether the market had a positive or negative return on a given week \\
+ \hline
+\end{tabular}
+\end{center}
+This data set is a part of ISLR package.  
+
+(b) Perform a logistic regression with \textit{Direction} as the response and the five lag variables plus Volume as predictors. Do any of the predictors appear to be statistically significant? If so, which ones?  
+```{r 3.b, indent="     "}
+attach(Weekly)
+reg <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, family = binomial)
+summary(reg)
+```
+Only Lag2, percentage return for 2 weeks previous, is significant.
+
+(c) Compute the confusion matrix and overall fraction of correct predictions. Explain what the confusion matrix is telling you about the types of mistakes made by logistic regression.
+```{r 3.c, indent="     "}
+p <- predict(reg, Weekly, type="response")
+prediction <- ifelse(p > 0.5, "Up", "Down")
+confusion.matrix <- table(prediction, Direction)
+confusion.matrix
+data.frame('FPR' = as.numeric(confusion.matrix[2,1]/colSums(confusion.matrix)[1]),
+      'FNR' = as.numeric(confusion.matrix[1,2]/colSums(confusion.matrix)[2]),
+      'error.rate' = 1 -  mean(prediction == Direction))
+```
+In the confusion matrix, 430 observations are predicted to move up when it actually moved down, while 54 observations are correctly predicted to move down. So, the 'False Positive Rate' made by the logistic model is 0.8884298. Similarly, 48 out of 605 moved-up observations are incorrectly predicted to move down producing 0.0793388 'False Negative Rate'. Also, 478 out of 1089 observations are incorrectly predicted, so the error rate is 0.4389348.
+
+(d) Cross-validation... Now fit the logistic regression model using a training data period from 1990 to 2008, with Lag2 as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 and 2010).
+```{r 3.d, indent="     "}
+training <- Weekly[Year %in% (1990:2008),]
+testing <- Weekly[!Year %in% (1990:2008),]
+reg <- glm(Direction ~ Lag2, data = training, family = binomial)
+p <- predict(reg, newdata = testing, type="response")
+prediction <- ifelse(p > 0.5, "Up", "Down")
+Y.testing <- testing$Direction
+confusion.matrix <- table(Y.testing, prediction)
+confusion.matrix 
+data.frame('class.rate' = mean( Y.testing == prediction   )) 
+```
+Using Lag2 as the only predictor in the model, the overall fraction of correct predictions for the held out data, which is the classfication rate, is 0.625.
+
+\hspace{3pt}(i) Plot an ROC curve for the logistic regression classifier, using different probability thresholds.
+```{r 3.i, indent="     "}
+TPR <- rep(NA,1000)
+FPR <- rep(NA,1000)
+for (i in 1:1000){
+  prediction <- ifelse(p > (i/1000), "Up", "Down")
+  TPR[i] <- sum(prediction=='Up' & testing$Direction=='Up') / sum(testing$Direction=='Up')
+  FPR[i] <- sum(prediction=='Up' & testing$Direction=='Down') / sum(testing$Direction=='Down')
+}
+data.frame(FPR, TPR) %>%
+  ggplot(aes(x = FPR, y = TPR)) +
+  geom_point(alpha = 0.3) +
+  xlab("False positive rate") + 
+  ylab("True positive rate") +
+  ggtitle("ROC curve")
+```
+\newline Applying thresholds in a range of (0,1), the ROC curve is shown above. The curve is not ideal, since it does not hug the top left corner. In other words, the area under the curve is not so large to make a good classifier.
+ 
+(j) Will KNN method perform better? Use all five Lag variables and predict the direction of the market in 2009-2010 based on training data 1990-2008. Try different k and select the optimal one. Give a confusion matrix.
+```{r 3.j, indent="     "}
+library(class)
+set.seed(666)
+X.training <- Weekly[Year %in% (1990:2008),c(2:6)]
+Y.training <- Weekly[Year %in% (1990:2008),]$Direction
+X.testing <- Weekly[Year %in% (2009:2010),c(2:6)]
+Y.testing <- Weekly[Year %in% (2009:2010),]$Direction
+class.rate <- rep(NA,100) 
+for(i in 1:100){
+knn.result <- knn( X.training, X.testing, Y.training, i )
+class.rate[i] <- mean( Y.testing == knn.result )
+}
+which.max(class.rate)
+class.rate[which.max(class.rate)]
+knn.result <- knn( X.training, X.testing, Y.training, which.max(class.rate) )
+table( Y.testing, knn.result ) 
+```
+The optimal k for KNN is 62 upholding the classification rate as high as 0.5962. The respective confusion matrix is shown above.
+ 
+\hspace{3pt}(e) Use LDA with a training data period from 1990 to 2008, with Lag2 as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 and 2010).
+```{r 3.e, indent="     "}
+library(MASS)  
+train <- Year %in% (1990:2008)
+lda.fit <- lda( Direction ~ Lag2, data = Weekly[train,])
+lda.hat <- predict(lda.fit , newdata = Weekly[!train,])$class
+data.frame('class.rate' = mean( Y.testing == lda.hat  )) 
+table(Y.testing, lda.hat) 
+```
+The overall fraction of correct LDA predictions for the held out data is 0.625, which is as high as that of logistic method. The confusion matrix is accordingly computed as above.
+\vspace{6pt}
+(f) Repeat (e) using QDA.
+```{r 3.f, indent="     "}
+qda.fit <- qda( Direction ~ Lag2, data = Weekly[train,])
+qda.hat <- predict(qda.fit , newdata = Weekly[!train,])$class
+data.frame('class.rate' = mean( Y.testing == qda.hat  )) 
+table(Y.testing, qda.hat) 
+```
+According to the output, the classification rate of QDA is 0.5865 following with its confusion matrix.
+\vspace{6pt}
+(g) Repeat (e) using KNN with K = 1.
+```{r 3.g, indent="     "}
+library(class)
+set.seed(666)
+X.training <- Weekly[Year %in% (1990:2008),]$Lag2 %>% as.matrix()
+Y.training <- Weekly[Year %in% (1990:2008),]$Direction %>% as.matrix()
+X.testing <- Weekly[Year %in% (2009:2010),]$Lag2 %>% as.matrix()
+Y.testing <- Weekly[Year %in% (2009:2010),]$Direction %>% as.matrix()
+knn.result <- knn( X.training, X.testing, Y.training, k= 1 )
+data.frame('class.rate' = mean( Y.testing == knn.result )) 
+table( Y.testing, knn.result ) 
+```
+Using KNN with K = 1, the classification rate becomes 0.5. Its confusion matrix is also computed.
+\vspace{6pt}
+(h) Which of our classification methods appears to provide the best results on this data?
+```{r 3.h, indent="     ", echo=FALSE}
+# logistic
+p <- predict(reg, newdata = testing, type="response")
+prediction <- ifelse(p > 0.5, "Up", "Down")
+class.rate.logi <- mean(prediction == testing$Direction)
+# KNN
+class.rate.knn <- mean( Y.testing == knn.result )
+# LDA
+class.rate.lda <- mean( Y.testing == lda.hat)
+# QDA
+class.rate.qda <-mean( Y.testing == qda.hat)
+# out
+data.frame('method' = c('logistic', 'KNN', 'LDA', 'QDA'),
+           'class.rate' = c(class.rate.logi, class.rate.knn, class.rate.lda, class.rate.qda)) 
+```
+LDA and logistic method have the highest classifation rate, so they would be expected to provide the best results. 
+<!-- \begin{enumerate} -->
+<!--  \item [(b)] Perform a logistic regression with \textit{Direction} as the response and the five lag variables plus Volume as predictors. Do any of the predictors appear to be statistically significant? If so, which ones?   -->
+<!-- ```{r 3.b, indent="     "} -->
+<!-- attach(Weekly) -->
+<!-- reg <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, family = binomial) -->
+<!-- summary(reg) -->
+<!-- ``` -->
+<!-- Only Lag2, percentage return for 2 weeks previous, is significant. -->
+
+<!--  \item [(c)] Compute the confusion matrix and overall fraction of correct predictions. Explain what the confusion matrix is telling you about the types of mistakes made by logistic regression. -->
+<!-- ```{r 3.c, indent="     "} -->
+<!-- p <- predict(reg, Weekly, type="response") -->
+<!-- prediction <- ifelse(p > 0.5, "Up", "Down") -->
+<!-- confusion.matrix <- table(prediction, Direction) -->
+<!-- confusion.matrix  -->
+<!-- cbind('sensitivity' = as.numeric(confusion.matrix[2,2]/rowSums(confusion.matrix)[2]), -->
+<!--       'specificity' = as.numeric(confusion.matrix[1,1]/rowSums(confusion.matrix)[1]))  -->
+<!-- ``` -->
+
+<!--  \item [(d)] Cross-validation... Now fit the logistic regression model using a training data period from 1990 to 2008, with Lag2 as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 and 2010). -->
+<!-- ```{r 3.d, indent="     "} -->
+<!-- training <- Weekly[Year %in% (1990:2008),] -->
+<!-- testing <- Weekly[!Year %in% (1990:2008),] -->
+<!-- reg <- glm(Direction ~ Lag2, data = training, family = binomial) -->
+<!-- p <- predict(reg, newdata = testing, type="response") -->
+<!-- prediction <- ifelse(p > 0.5, "Up", "Down") -->
+<!-- confusion.matrix <- table(prediction, testing$Direction) -->
+<!-- confusion.matrix  -->
+<!-- sensitivity <- as.numeric(confusion.matrix[2,2]/rowSums(confusion.matrix)[2]) -->
+<!-- specificity <- as.numeric(confusion.matrix[1,1]/rowSums(confusion.matrix)[1]) -->
+<!-- cbind(sensitivity, specificity)  -->
+<!-- ``` -->
+
+<!--  \item [(i)] Plot an ROC curve for the logistic regression classifier, using different probability thresholds. -->
+<!-- ```{r 3.i, indent="     "} -->
+<!-- TPR <- rep(NA,1000) -->
+<!-- FPR <- rep(NA,1000) -->
+<!-- for (i in 1:1000){ -->
+<!--   prediction <- ifelse(p > (i/1000), "Up", "Down") -->
+<!--   TPR[i] <- sum( prediction=='Up' & testing$Direction=='Up' ) / sum( testing$Direction=='Up' ) -->
+<!--   FPR[i] <- sum( prediction=='Up' & testing$Direction=='Down' ) / sum( testing$Direction=='Down' ) -->
+<!-- } -->
+<!-- data.frame(FPR, TPR) %>% -->
+<!--   ggplot(aes(x = FPR, y = TPR)) + -->
+<!--   geom_point(alpha = 0.3) + -->
+<!--   xlab("False positive rate") +  -->
+<!--   ylab("True positive rate") + -->
+<!--   ggtitle("ROC curve") -->
+
+<!-- ``` -->
+
+<!--  \item [(j)] Will KNN method perform better? Use all five Lag variables and predict the direction of the market in 2009-2010 based on training data 1990-2008. Try different k and select the optimal one. Give a confusion matrix. -->
+<!-- ```{r 3.j, indent="     "} -->
+<!-- library(class) -->
+<!-- set.seed(666) -->
+<!-- X.training <- Weekly[Year %in% (1990:2008),c(2:6)] -->
+<!-- Y.training <- Weekly[Year %in% (1990:2008),]$Direction -->
+<!-- X.testing <- Weekly[Year %in% (2009:2010),c(2:6)] -->
+<!-- Y.testing <- Weekly[Year %in% (2009:2010),]$Direction -->
+<!-- class.rate <- rep(NA,100)  -->
+<!-- for(i in 1:100){ -->
+<!-- knn.result <- knn( X.training, X.testing, Y.training, i ) -->
+<!-- class.rate[i] <- mean( Y.testing == knn.result ) -->
+<!-- } -->
+<!-- knn.result <- knn( X.training, X.testing, Y.training, which.max(class.rate) ) -->
+<!-- table( Y.testing, knn.result )  -->
+<!-- ``` -->
+
+<!--  \item [(e)] Use LDA with a training data period from 1990 to 2008, with Lag2 as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 and 2010). -->
+<!-- ```{r 3.e, indent="     "} -->
+<!-- library(MASS)   -->
+<!-- train <- Year %in% (1990:2008) -->
+<!-- lda.fit <- lda( Direction ~ Lag2, data = Weekly[train,]) -->
+<!-- lda.hat <- predict(lda.fit , newdata = Weekly[!train,])$class -->
+<!-- data.frame('class.rate' = mean( Y.testing == lda.hat  ))  -->
+<!-- table(Y.testing, lda.hat)  -->
+<!-- ``` -->
+
+<!--  \item [(f)] Repeat (e) using QDA. -->
+<!-- ```{r 3.f, indent="     "} -->
+<!-- qda.fit <- qda( Direction ~ Lag2, data = Weekly[train,]) -->
+<!-- qda.hat <- predict(qda.fit , newdata = Weekly[!train,])$class -->
+<!-- data.frame('class.rate' = mean( Y.testing == qda.hat  ))  -->
+<!-- table(Y.testing, qda.hat)  -->
+<!-- ``` -->
+
+<!--  \item [(g)] Repeat (e) using KNN with K = 1. -->
+<!-- ```{r 3.g, indent="     "} -->
+<!-- library(class) -->
+<!-- set.seed(666) -->
+<!-- X.training <- Weekly[Year %in% (1990:2008),]$Lag2 %>% as.matrix() -->
+<!-- Y.training <- Weekly[Year %in% (1990:2008),]$Direction %>% as.matrix() -->
+<!-- X.testing <- Weekly[Year %in% (2009:2010),]$Lag2 %>% as.matrix() -->
+<!-- Y.testing <- Weekly[Year %in% (2009:2010),]$Direction %>% as.matrix() -->
+<!-- knn.result <- knn( X.training, X.testing, Y.training, k= 1 ) -->
+<!-- data.frame('class.rate' = mean( Y.testing == knn.result ))  -->
+<!-- table( Y.testing, knn.result )  -->
+<!-- ``` -->
+
+<!--  \item [(h)] Which of our classification methods appears to provide the best results on this data? -->
+<!-- ```{r 3.h, indent="     ", echo=FALSE} -->
+<!-- # logistic -->
+<!-- p <- predict(reg, newdata = testing, type="response") -->
+<!-- prediction <- ifelse(p > 0.5, "Up", "Down") -->
+<!-- class.rate.logi <- mean(prediction == testing$Direction) -->
+<!-- # KNN -->
+<!-- class.rate.knn <- mean( Y.testing == knn.result ) -->
+<!-- # LDA -->
+<!-- class.rate.lda <- mean( Y.testing == lda.hat) -->
+<!-- # QDA -->
+<!-- class.rate.qda <-mean( Y.testing == qda.hat) -->
+<!-- # out -->
+<!-- data.frame('method' = c('logistic', 'KNN', 'LDA', 'QDA'), -->
+<!--            'class.rate' = c(class.rate.logi, class.rate.knn, class.rate.lda, class.rate.qda))  -->
+<!-- ``` -->
+<!-- \end{enumerate} -->
+
+**4. Page 173, chap. 4, $\neq$#13. (Stat-627 only)** Consider the *Boston* data set in ISLR package, fit classification models in order to predict whether a given suburb has a crime rate above or below the median. Explore logistic regression, LDA, and KNN methods and compare their performance. Try to use the most significant independent variables. Describe your findings. 
+```{r 4}
+attach(Boston)
+set.seed(666)
+# manipulate
+sum(crim == median(crim))
+crim.p <- ifelse(crim > median(crim), 'over', 'below')
+df <- cbind(Boston, crim.p)
+n <- nrow(df)
+# train & test
+train.index <- sample(n,n/2)
+y.train <- df[train.index,]$crim.p
+y.test <- df[-train.index,]$crim.p
+# choose variables
+full <- glm(crim.p ~ .-crim, family = binomial, data =df , subset = train.index)
+model <- step(full, direction = "backward", trace=0)
+model$formula
+# logistic
+reg <- glm(model$formula, family = binomial, data =df , subset = train.index)
+p <- predict(reg, df[-train.index,], type="response")
+y.hat <- ifelse(p > 0.5, 'over', 'below')
+table(y.test, y.hat)
+class.rate.logistic <- mean( y.hat == y.test )
+data.frame('class.rate' = class.rate.logistic)
+#KNN
+var.name <- model$formula %>% as.character() %>% str_extract_all('[:alpha:]+\\.?[:alpha:]+') %>% 
+  unlist() %>% na.omit() %>% tail(-1)
+x.train <- df[train.index, var.name]
+x.test <- df[-train.index, var.name]
+class.rate <- rep(NA,100) 
+for(i in 1:100){
+knn.result <- knn( x.train, x.test, y.train, i )
+class.rate[i] <- mean( y.test == knn.result )
+}
+which.max(class.rate)
+knn.result <- knn( x.train, x.test, y.train, which.max(class.rate) )
+table( y.test, knn.result ) 
+class.rate.knn <- class.rate[which.max(class.rate)]
+data.frame('class.rate' = class.rate.knn)
+# LDA
+lda.fit <- lda( model$formula, data = df[train.index,])
+lda.hat <- predict(lda.fit , newdata = x.test)$class
+table( y.test, lda.hat ) 
+class.rate.lda <- mean(lda.hat == y.test)
+data.frame('class.rate' = class.rate.lda)
+# QDA
+qda.fit <- qda( model$formula, data = df[train.index,])
+qda.hat <- predict(qda.fit , newdata = x.test)$class
+table( y.test, qda.hat ) 
+class.rate.qda <- mean(qda.hat == y.test)
+data.frame('class.rate' = class.rate.qda)
+# table
+data.frame('method' = c('logistic', 'KNN', 'LDA', 'QDA'),
+           'class.rate' = c(class.rate.logistic, class.rate.knn, class.rate.lda, class.rate.qda)) 
+```
+Using stepwise variable selection procedure, zn, nox, dis, rad, tax, ptratio, black, lstat and medv are decided to be the predictors included in the model. Comparing the performance of logistic regression, LDA, and KNN methods, KNN has the highest classification rate, 0.9367589. It makes sense in such situation that the model has a lot of variables. The decision boundary is expected to be highly non-linear, so the non-parametric KNN method reasonably dominate the other methods.
+

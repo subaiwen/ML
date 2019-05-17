@@ -1,0 +1,153 @@
+\documentclass[12pt,fleqn]{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{\alph{enumi}.} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+<<include=FALSE>>=
+# Set global chunk options
+opts_chunk$set(echo = T,
+               warning = F,
+               message = F,
+               cache = T)
+invisible(lapply(c("tidyverse","ISLR","leaps", "glmnet", "boot", "pls"),library, character.only=TRUE))
+attach(College)
+@
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework \#8: Variable Selection and Shrinkage}
+
+	\begin{enumerate}[1.]
+% 1.
+    \item \textbf{(Real data analysis - Chap. 6, \# 9, p.263)}\\
+    Predict the number of applications received based on the other variables in the \textbf{College} data set. This data set is from our textbook. To access it, you can type \texttt{library(ISLR)}; \texttt{attach(College)}. Fit
+		  \begin{enumerate}[(a)]
+		  % (a)
+  			\item Least squares regression, selecting the best model;
+<<a>>=
+set.seed(666)
+n <- nrow(College)
+z <- sample(n,n/2)
+train <- College[z,]
+test <- College[-z,]
+## (a) LSE
+reg.fit <- regsubsets(Apps ~ ., data = College) # leaps
+summary(reg.fit)
+which.max(summary(reg.fit)$adjr2) # Adjusted R2
+which.min(summary(reg.fit)$cp)  # Mallows Cp
+which.min(summary(reg.fit)$bic)  # BIC = Bayesian information criterion
+    # 8 predictors
+summary(reg.fit)$which[8,] # predictors
+reg <- lm(Apps ~ Private + Accept + Enroll + Top10perc + Outstate + Room.Board + PhD + Expend, data = College)
+summary(reg)
+    # Validation set approach
+ols.reg <- glm(Apps ~ Private + Accept + Enroll + Top10perc + Outstate + Room.Board + PhD + Expend, data = train)
+y.hat <- predict(ols.reg, test)
+(err.lm <- mean((test$Apps - y.hat)^2))  # test error
+@
+
+  		% (b)
+			  \item Ridge regression, with $\lambda$ chosen by cross-validation;
+<<b>>=
+reg <- lm(Apps ~Private + Accept + Enroll + Top10perc + Outstate + Room.Board + PhD + Expend, data = train)
+X <- model.matrix(reg)
+Y <- Apps[z]
+cv.ridge <- cv.glmnet(X,Y,alpha=0, nfolds = 10, lambda = seq(0,40,0.01)) # library(glmnet)
+(lambda <- cv.ridge$lambda.min) # cv least lambda
+X.test <- model.matrix(Apps ~Private + Accept + Enroll + Top10perc + Outstate + Room.Board + PhD + Expend, data = test)
+y.hat.ridge <- predict(cv.ridge, s=lambda, newx=X.test) # s: Value(s) of the penalty parameter lambda
+(err.ridge <- mean((test$Apps - y.hat.ridge)^2))  # test error
+@
+
+			% (c)
+			  \item Lasso, with $\lambda$ chosen by cross-validation;
+<<c>>=
+cv.lasso <- cv.glmnet(X,Y,alpha=1,nfolds = 10, lambda = seq(0,40,0.01)) # library(glmnet)
+(lambda <-cv.lasso$lambda.min) # cv least lambda
+y.hat.lasso <- predict(cv.lasso, s=lambda, newx=X.test)
+(err.lasso <- mean((test$Apps - y.hat.lasso)^2))  # test error
+@
+
+			% (d)
+			  \item PCR model, with M, the number of principal components, chosen by cross-validation;
+<<d>>=
+cv.prin <- pcr(Apps ~Private + Accept + Enroll + Top10perc + Outstate + Room.Board + PhD + Expend,
+                data = train, scale = TRUE, validation = "CV") # library(pls)
+validationplot(cv.prin, val.type="MSEP")
+MSEP(cv.prin) # MSE
+y.hat.pcr <- predict(cv.prin, test, ncomp=8)
+(err.pcr <- mean((test$Apps - y.hat.pcr)^2))  # test error
+@
+
+			% (e)
+			  \item PLS model, with M chosen by cross-validation.
+<<e>>=
+cv.plsr <- plsr(Apps ~Private + Accept + Enroll + Top10perc + Outstate + Room.Board + PhD + Expend,
+               data = train, scale = TRUE, validation = "CV") # library(pls)
+validationplot(cv.plsr, val.type="MSEP")
+MSEP(cv.plsr) # MSE
+y.hat.plsr <- predict(cv.plsr, test, ncomp=8)
+(err.plsr <- mean((test$Apps - y.hat.plsr)^2))  # test error
+@
+
+			\end{enumerate}
+		Evaluate performance of each method in terms of prediction accuracy. Report prediction mean squared errors obtained by cross-validation.
+<<echo = F>>=
+cbind(err.lm,err.ridge,err.lasso,err.pcr,err.plsr)
+@
+
+		Comment on the results obtained. How accurately can we predict the number of college applications? Is there much difference among the test errors resulting from these five approaches? Which method appears most accurate?\\[5pt]
+		The OLS regression, PCR, PLS yields the lowest testing MSE. Since PCR and PLS do not reduce the dimension the predictors, in other words, they use the model of OLS. So OLS regression appears to be most accurate.
+	\end{enumerate}
+\end{document}

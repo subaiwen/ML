@@ -1,0 +1,159 @@
+% homework template.tex
+\documentclass[12pt]{article}
+ 
+\usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\renewcommand{\labelenumi}{(\alph{enumi})} %first level: (a),(b)
+\renewcommand{\labelenumii}{(\roman{enumii})} %first level: (a),(b)
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+\begin{document}
+ 
+% EVERYTHING ABOVE THIS LINE IS JUST PREABLE, NO NEED TO MESS WITH IT.__________________________________________________________________________________________
+%
+
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+ 
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework 1}
+	\begin{problem} (2.4-1, p.52) For each of parts (a) through (d), indicate whether we would generally expect the performance of a flexible statistical learning method to be better or worse than an inflexible method. Justify your answer.
+		\begin{enumerate}
+  			\item The sample size n is extremely large, and the number of predictors p is small.
+  			\\[3pt]
+			A flexible statistical learning method would have better performance. It can improve the accuracy of the model.
+
+			\item The number of predictors p is extremely large, and the number of observations n is small.
+			\\[3pt]
+			A flexible statistical learning method will be worse than an inflexible method. A flexible might bring a higher variance and might overfit the data. Also, the model might be hard to interpret.
+
+			\item The relationship between the predictors and response is highly non-linear.
+			\\[3pt]
+			A flexible statistical learning method will be better. It allows the liner model to extend to various non-linear models.
+
+			\item The variance of the error terms, i.e. $\sigma^2$ = Var($\epsilon$), is extremely high.
+			\\[3pt]
+			A flexible statistical learning method will be worse. It would produce a model with very high variance.
+
+		\end{enumerate}
+	\end{problem}
+
+	\begin{problem} (2.4-2, p.52) Explain whether each scenario is a classification or regression problem, and indicate whether we are most interested in inference or prediction. Finally, provide n and p.
+		\begin{enumerate}
+			\item We collect a set of data on the top 500 firms in the US. For each firm we record profit, number of employees, industry and the CEO salary. We are interested in understanding which factors affect CEO salary.
+				\begin{itemize}
+					\item It is a regression problem.
+					\item We are most interested in inference.
+					\item $n=500$\\$p=3$
+				\end{itemize}
+
+			\item We are considering launching a new product and wish to know whether it will be a success or a failure. We collect data on 20 similar products that were previously launched. For each product we have recorded whether it was a success or failure, price charged for the product, marketing budget, competition price, and ten other variables.
+				\begin{itemize}
+					\item It is a classification problem.
+					\item We are most interested in prediction.
+					\item $n=20$\\$p=13$
+				\end{itemize}
+			\item We are interesting in predicting the \% change in the US dollar in relation to the weekly changes in the world stock markets. Hence we collect weekly data for all of 2012. For each week we record the \% change in the dollar, the the \% change in the British market, and the German market.
+				\begin{itemize}
+					\item It is a regression problem.
+					\item We are most interested in prediction.
+					\item $n=52$\\$p=2$
+				\end{itemize}
+
+		\end{enumerate}
+	\end{problem}
+	\begin{problem}(2.4-4, p. 53) You will now think of some real-life applications for statistical learning. In each example, describe the response and the predictors and state the goal - inference or prediction.
+		\begin{enumerate}
+			\item Describe two real-life applications in which classification might be useful.
+				\begin{enumerate}
+					\item To predict Reddit users' decision to subscribe the Premium service
+						\begin{itemize}
+							\item The response: subscription (yes/no)
+							\item The predictors: income/ Reddit age/ total number of upvotes and downvotes/ number of posts/ number of comments
+							\item Its goal: prediction
+						\end{itemize}
+					\item To predict whether a student will be admitted to become a AU graduate student
+						\begin{itemize}
+							\item The response: admission (yes/no)
+							\item The predictors: GPA, work experience, GRE
+							\item Its goal: prediction						
+						\end{itemize}
+				\end{enumerate}
+			
+			\item Describe two real-life applications in which regression might be useful.
+				\begin{enumerate}
+					\item To estimate the house price in DC
+						\begin{itemize}
+							\item The response: house price
+							\item The predictors: zipcode, house age, lot area, number of bedrooms, number of bathrooms, number of floors
+							\item Its goal: Inference						
+						\end{itemize}
+					\item To predict a student's grade on a quiz
+						\begin{itemize}
+							\item The response: grade
+							\item The predictors: length of sleep, length of time spent on the quiz, average grade of his/her homeworks
+							\item Its goal: prediction						
+						\end{itemize}
+				\end{enumerate}
+
+			\item Describe two real-life applications in which cluster analysis might be useful.
+				\begin{enumerate}
+					\item To recommen advertisement to Reddit users
+						\begin{itemize}
+							\item The response: type of advertisement
+							\item The predictors: users' subscribed communities, recently visited communities, content of posts, saved posts, upvoted posts 
+							\item Its goal: maybe prediction						
+						\end{itemize}
+					\item Object recognition in digital image
+						\begin{itemize}
+							\item The response: what object it is
+							\item The predictors: pixels
+							\item Its goal: maybe prediction
+						\end{itemize}
+				\end{enumerate}
+
+		\end{enumerate}
+	\end{problem}
+\end{document}

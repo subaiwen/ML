@@ -1,0 +1,346 @@
+\documentclass[12pt,fleqn]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{\alph{enumi}.} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{HW \#9: Polynomials and Splines (Chap.7, 7.1-7.5)}
+	\begin{enumerate}[1.]
+	% 1.
+	  \item \textbf{(Chap. 7, \# 3, p. 298)} Suppose we fit a curve with basis functions $b_1(X) = X$ and $b_2(X) = (X - 1)^2I \{X \geq 1\}$. We fit the regression model
+	  $$Y = \beta_0 +\beta_1b_1(X)+ \beta_2b_2(X)+ \varepsilon$$
+	  and obtain the estimated slopes $\hat{\beta_0} = 1$, $\hat{\beta_1} = 1$, $\hat{\beta_2} = -2$. Sketch the estimated curve between $X = -2$ and $X = 2$. Report the intercepts, slopes, and other relevant information.\\[-30pt]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=0.45\linewidth]{figure/1-1} 
+
+}
+
+
+
+\end{knitrout}
+    \vspace*{-30pt}
+    $$Y = \begin{cases}
+    X + 1 & \mbox{when } X < 1\\
+    X^2 - X + 2 & \mbox{when } X \geq 1
+    \end{cases}$$
+
+	% 2.
+	  \item \textbf{(Chap. 7, \# 4, p. 298)} Repeat the previous exercise with basis functions $b_1(X) = I\{0 \leq X \leq 2\}-(X-1)I\{1 \leq X \leq 2\}$ and $b_2(X)=(X-3)I\{3 \leq X \leq 4\}+I\{4<X \leq 5\}$ and estimated slopes $\hat{\beta_0} = 1$, $\hat{\beta_1} = 1$, $\hat{\beta_2} = 3$.\\[-30pt]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=0.45\linewidth]{figure/2-1} 
+
+}
+
+
+
+\end{knitrout}
+    \vspace*{-25pt}
+    $$Y = \begin{cases}
+    1 & \mbox{when } \{X < 0\} \bigcup \{2 < X < 3\} \bigcup \{X > 5\} \\
+    2 & \mbox{when } 0 \leq X < 1\\
+    3 - X & \mbox{when } 1 \leq X \leq 2\\
+    3X - 8 & \mbox{when } 3 \leq X \leq 4\\
+    4 & \mbox{when } 4 < X \leq 5
+    \end{cases}$$
+  % 3.
+    \item \textbf{(Chap. 7, $\approx$\# 8, p. 299)} Apply some of the non-linear models discussed in this chapter to the \texttt{Auto} data set to predict the vehicle’s \texttt{acceleration} time based on the \texttt{horsepower} of its engine.
+        \begin{enumerate}[(a)]
+        % (a)
+          \item Use cross-validation to select the optimal degree for the polynomial regression.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{MSE.hat} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{,}\hlnum{10}\hlstd{)} \hlcom{# testing MSE}
+\hlkwa{for}\hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{10}\hlstd{)\{}
+  \hlstd{ply} \hlkwb{<-} \hlkwd{glm}\hlstd{( acceleration} \hlopt{~} \hlkwd{poly}\hlstd{(horsepower,i),} \hlkwc{data} \hlstd{= Auto)}
+  \hlstd{MSE.hat[i]} \hlkwb{<-} \hlkwd{cv.glm}\hlstd{( Auto, ply)}\hlopt{$}\hlstd{delta[}\hlnum{2}\hlstd{]} \hlcom{# adjusted MSE penalize # of predictors}
+\hlstd{\}}
+\hlkwd{plot}\hlstd{(MSE.hat,} \hlkwc{xlab} \hlstd{=} \hlstr{"degree"}\hlstd{)}
+\hlkwd{lines}\hlstd{(MSE.hat)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/3_a-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{which.min}\hlstd{(MSE.hat)}
+\end{alltt}
+\begin{verbatim}
+## [1] 5
+\end{verbatim}
+\begin{alltt}
+\hlcom{# plot model}
+\hlkwd{ggplot}\hlstd{(Auto,} \hlkwd{aes}\hlstd{(}\hlkwc{y}\hlstd{=acceleration,} \hlkwc{x}\hlstd{=horsepower))} \hlopt{+}
+  \hlkwd{geom_point}\hlstd{(}\hlkwc{alpha} \hlstd{=} \hlnum{.5}\hlstd{)} \hlopt{+}
+  \hlkwd{stat_smooth}\hlstd{(}\hlkwc{method} \hlstd{=} \hlstr{"lm"}\hlstd{,} \hlkwc{formula} \hlstd{= y} \hlopt{~} \hlkwd{poly}\hlstd{(x,}\hlkwd{which.min}\hlstd{(MSE.hat)),}
+              \hlkwc{se} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/3_a-2} 
+\begin{kframe}\begin{alltt}
+\hlcom{# MSE}
+\hlkwd{set.seed}\hlstd{(}\hlnum{666}\hlstd{)}
+\hlstd{n} \hlkwb{<-} \hlkwd{nrow}\hlstd{(Auto)}
+\hlstd{z} \hlkwb{<-} \hlkwd{sample}\hlstd{(n,n}\hlopt{/}\hlnum{2}\hlstd{)}
+\hlstd{ply.train} \hlkwb{<-} \hlkwd{glm}\hlstd{( acceleration} \hlopt{~} \hlkwd{poly}\hlstd{(horsepower,i),} \hlkwc{data} \hlstd{= Auto[z,])}
+\hlkwd{mean}\hlstd{((acceleration[}\hlopt{-}\hlstd{z]} \hlopt{-} \hlkwd{predict}\hlstd{(ply.train,} \hlkwc{newx}\hlstd{=horsepower[}\hlopt{-}\hlstd{z]))}\hlopt{^}\hlnum{2}\hlstd{)} \hlcom{# test MSE}
+\end{alltt}
+\begin{verbatim}
+## [1] 12.17566
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+          The optimal degree for the polynimial regression is 5.
+
+        % (b)
+          \item Looking at the scatterplot of acceleration vs horsepower, choose some knots and fit a regression spline.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(horsepower, acceleration)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/3_b-1} 
+\begin{kframe}\begin{alltt}
+\hlstd{spline} \hlkwb{<-} \hlkwd{lm}\hlstd{( acceleration} \hlopt{~} \hlkwd{bs}\hlstd{(horsepower,} \hlkwc{knots} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{120}\hlstd{,}\hlnum{160}\hlstd{,}\hlnum{180}\hlstd{)),} \hlkwc{data} \hlstd{= Auto)}
+\hlcom{# plot model}
+\hlkwd{ggplot}\hlstd{(Auto,} \hlkwd{aes}\hlstd{(}\hlkwc{y}\hlstd{=acceleration,} \hlkwc{x}\hlstd{=horsepower))} \hlopt{+}
+  \hlkwd{geom_point}\hlstd{(}\hlkwc{alpha} \hlstd{=} \hlnum{.5}\hlstd{)} \hlopt{+}
+  \hlkwd{stat_smooth}\hlstd{(}\hlkwc{method} \hlstd{=} \hlstr{"lm"}\hlstd{,} \hlkwc{formula} \hlstd{= y}\hlopt{~} \hlkwd{bs}\hlstd{(x,} \hlkwc{knots} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{120}\hlstd{,}\hlnum{160}\hlstd{,}\hlnum{180}\hlstd{)),}
+              \hlkwc{se} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/3_b-2} 
+\begin{kframe}\begin{alltt}
+\hlcom{# MSE}
+\hlstd{spline.train} \hlkwb{<-} \hlkwd{lm}\hlstd{( acceleration} \hlopt{~} \hlkwd{bs}\hlstd{(horsepower,} \hlkwc{knots} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{120}\hlstd{,}\hlnum{160}\hlstd{,}\hlnum{180}\hlstd{)),}
+                    \hlkwc{data} \hlstd{= Auto[z,])}
+\hlkwd{mean}\hlstd{((acceleration[}\hlopt{-}\hlstd{z]} \hlopt{-} \hlkwd{predict}\hlstd{(spline.train,} \hlkwc{newx}\hlstd{=horsepower[}\hlopt{-}\hlstd{z]))}\hlopt{^}\hlnum{2}\hlstd{)} \hlcom{# test MSE}
+\end{alltt}
+\begin{verbatim}
+## [1] 11.88145
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+        % (c)
+          \item Fit a smoothing spline, selecting the smoothing parameter by cross-validation.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{MSE.hat} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{,}\hlnum{100}\hlstd{)}
+\hlkwa{for} \hlstd{(k} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{100}\hlstd{)\{}
+  \hlstd{d.f} \hlkwb{<-} \hlnum{2} \hlopt{+} \hlstd{k}\hlopt{/}\hlnum{25}
+  \hlstd{ss} \hlkwb{=} \hlkwd{smooth.spline}\hlstd{(horsepower, acceleration,} \hlkwc{df} \hlstd{= d.f)} \hlcom{# spline.smooth(x,y)}
+  \hlstd{MSE.hat[k]} \hlkwb{<-} \hlstd{ss}\hlopt{$}\hlstd{cv.crit}
+\hlstd{\}}
+\hlnum{2} \hlopt{+} \hlkwd{which.min}\hlstd{(MSE.hat)}\hlopt{/}\hlnum{25} \hlcom{# best df}
+\end{alltt}
+\begin{verbatim}
+## [1] 6
+\end{verbatim}
+\begin{alltt}
+\hlcom{# plot model}
+\hlkwd{ggplot}\hlstd{(Auto,} \hlkwd{aes}\hlstd{(}\hlkwc{y}\hlstd{=acceleration,} \hlkwc{x}\hlstd{=horsepower))} \hlopt{+}
+  \hlkwd{geom_point}\hlstd{(}\hlkwc{alpha} \hlstd{=} \hlnum{.5}\hlstd{)} \hlopt{+}
+  \hlstd{ggformula}\hlopt{::}\hlkwd{geom_spline}\hlstd{(}\hlkwc{df} \hlstd{=} \hlnum{2} \hlopt{+} \hlkwd{which.min}\hlstd{(MSE.hat)}\hlopt{/}\hlnum{25}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{1.3}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/3_c-1} 
+\begin{kframe}\begin{alltt}
+\hlcom{# MSE}
+\hlstd{smooth.train} \hlkwb{<-} \hlkwd{smooth.spline}\hlstd{(horsepower[z], acceleration[z],}
+                              \hlkwc{df} \hlstd{=} \hlnum{2} \hlopt{+} \hlkwd{which.min}\hlstd{(MSE.hat)}\hlopt{/}\hlnum{25}\hlstd{)}
+\hlkwd{mean}\hlstd{((acceleration[}\hlopt{-}\hlstd{z]} \hlopt{-} \hlkwd{predict}\hlstd{(smooth.train,} \hlkwc{x}\hlstd{=horsepower[}\hlopt{-}\hlstd{z])}\hlopt{$}\hlstd{y)}\hlopt{^}\hlnum{2}\hlstd{)} \hlcom{# test MSE}
+\end{alltt}
+\begin{verbatim}
+## [1] 3.8615
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+        \end{enumerate}
+    For each method, make a plot of the resulting fitted line, and estimate its prediction mean squared error by some cross-validation technique. Which approach resulted in the best prediction accuracy?\\[5pt]
+    Smoothing spline gives the best prediction accuracy.
+  % 4.
+    \item \textbf{(For Stat-627 only... Chap. 7, \# 2, p. 298)} Suppose that a curve g is computed to smoothly fit a set of n points using the following formula
+    $$\hat{g} = arg \underbrace{min}_{g}\{\sum^{n}_{i=1} (y_i - g(x_i))^2 + \lambda\int[g^{(m)}(x)]^2 dx \}$$
+    where $g^{(m)}$ is the m-th derivative of $g$ (and $g^{(0)} = g$). Provide example sketches of $\hat{g}$ in each of the following scenarios.
+        \begin{enumerate}[(a)]
+
+
+        % (a)
+          \item $\lambda = \infty, m= 0$
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=0.5\linewidth]{figure/4_a-1} 
+
+}
+
+
+
+\end{knitrout}
+
+        % (b)
+          \item $\lambda = \infty, m= 1$
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=0.5\linewidth]{figure/4_b-1} 
+
+}
+
+
+
+\end{knitrout}
+
+        % (c)
+          \item $\lambda = \infty, m= 2$
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=0.5\linewidth]{figure/4_c-1} 
+
+}
+
+
+
+\end{knitrout}
+
+        % (d)
+          \item $\lambda = \infty, m= 3$
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=0.5\linewidth]{figure/4_d-1} 
+
+}
+
+
+
+\end{knitrout}
+
+        % (e)
+          \item $\lambda = 0, m= 3$
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=0.5\linewidth]{figure/4_e-1} 
+
+}
+
+
+
+\end{knitrout}
+        \end{enumerate}
+    This problem does not require you to take evaluate derivatives or integrals. Recall, however, that $g' = g'' = 0$ for a constant, $g' = const$ and $g'' = 0$ for a linear function $g(x)$, and $g'' = const$ for a quadratic function $g(x)$.
+	\end{enumerate}
+\end{document}

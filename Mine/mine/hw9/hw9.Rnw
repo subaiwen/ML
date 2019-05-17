@@ -1,0 +1,219 @@
+\documentclass[12pt,fleqn]{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{\alph{enumi}.} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+<<include=FALSE>>=
+# Set global chunk options
+opts_chunk$set(echo = T,
+               warning = F,
+               message = F,
+               cache = T)
+invisible(lapply(c("knitr","kableExtra","tidyverse","ISLR","boot","splines"),library, character.only=TRUE))
+source("/Users/liubeixi/Desktop/ML/HW/mine/hw9/hw9.R")
+@
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{HW \#9: Polynomials and Splines (Chap.7, 7.1-7.5)}
+	\begin{enumerate}[1.]
+	% 1.
+	  \item \textbf{(Chap. 7, \# 3, p. 298)} Suppose we fit a curve with basis functions $b_1(X) = X$ and $b_2(X) = (X - 1)^2I \{X \geq 1\}$. We fit the regression model
+	  $$Y = \beta_0 +\beta_1b_1(X)+ \beta_2b_2(X)+ \varepsilon$$
+	  and obtain the estimated slopes $\hat{\beta_0} = 1$, $\hat{\beta_1} = 1$, $\hat{\beta_2} = -2$. Sketch the estimated curve between $X = -2$ and $X = 2$. Report the intercepts, slopes, and other relevant information.\\[-30pt]
+<<1, out.width="0.45\\linewidth", echo=FALSE, fig.align = "center">>=
+b.1 <- function(x){x}
+b.2 <- function(x){(x-1)^2*(1*(x>=1))}
+beta.0 = beta.1 = 1; beta.2 = -2
+curve(beta.0 + beta.1*b.1(x) + beta.2*b.2(x), xlim = c(-2,2), ylab = "y")
+@
+    \vspace*{-30pt}
+    $$Y = \begin{cases}
+    X + 1 & \mbox{when } X < 1\\
+    X^2 - X + 2 & \mbox{when } X \geq 1
+    \end{cases}$$
+
+	% 2.
+	  \item \textbf{(Chap. 7, \# 4, p. 298)} Repeat the previous exercise with basis functions $b_1(X) = I\{0 \leq X \leq 2\}-(X-1)I\{1 \leq X \leq 2\}$ and $b_2(X)=(X-3)I\{3 \leq X \leq 4\}+I\{4<X \leq 5\}$ and estimated slopes $\hat{\beta_0} = 1$, $\hat{\beta_1} = 1$, $\hat{\beta_2} = 3$.\\[-30pt]
+<<2, out.width="0.45\\linewidth", echo=FALSE, fig.align = "center">>=
+b.1 <- function(x){ 1*(0<=x & x<=2) - (x-2)*(1<=x & x<=2) }
+b.2 <- function(x){ (x-3)*(3<=x & x<=4) + 1*(4<x & x<=5) }
+beta.0 = beta.1 = 1; beta.2 = 3
+curve(beta.0 + beta.1*b.1(x) + beta.2*b.2(x), xlim = c(-2,8), ylab = "y")
+@
+    \vspace*{-25pt}
+    $$Y = \begin{cases}
+    1 & \mbox{when } \{X < 0\} \bigcup \{2 < X < 3\} \bigcup \{X > 5\} \\
+    2 & \mbox{when } 0 \leq X < 1\\
+    3 - X & \mbox{when } 1 \leq X \leq 2\\
+    3X - 8 & \mbox{when } 3 \leq X \leq 4\\
+    4 & \mbox{when } 4 < X \leq 5
+    \end{cases}$$
+  % 3.
+    \item \textbf{(Chap. 7, $\approx$\# 8, p. 299)} Apply some of the non-linear models discussed in this chapter to the \texttt{Auto} data set to predict the vehicle’s \texttt{acceleration} time based on the \texttt{horsepower} of its engine.
+        \begin{enumerate}[(a)]
+        % (a)
+          \item Use cross-validation to select the optimal degree for the polynomial regression.
+<<3.a>>=
+MSE.hat <- rep(NA,10) # testing MSE
+for(i in 1:10){
+  ply <- glm( acceleration ~ poly(horsepower,i), data = Auto)
+  MSE.hat[i] <- cv.glm( Auto, ply)$delta[2] # adjusted MSE penalize # of predictors
+}
+plot(MSE.hat, xlab = "degree")
+lines(MSE.hat)
+which.min(MSE.hat)
+# plot model
+ggplot(Auto, aes(y=acceleration, x=horsepower)) +
+  geom_point(alpha = .5) +
+  stat_smooth(method = "lm", formula = y ~ poly(x,which.min(MSE.hat)),
+              se = FALSE)
+# MSE
+set.seed(666)
+n <- nrow(Auto)
+z <- sample(n,n/2)
+ply.train <- glm( acceleration ~ poly(horsepower,i), data = Auto[z,])
+mean((acceleration[-z] - predict(ply.train, newx=horsepower[-z]))^2) # test MSE
+
+@
+          The optimal degree for the polynimial regression is 5.
+
+        % (b)
+          \item Looking at the scatterplot of acceleration vs horsepower, choose some knots and fit a regression spline.
+<<3.b>>=
+plot(horsepower, acceleration)
+spline <- lm( acceleration ~ bs(horsepower, knots = c(120,160,180)), data = Auto)
+# plot model
+ggplot(Auto, aes(y=acceleration, x=horsepower)) +
+  geom_point(alpha = .5) +
+  stat_smooth(method = "lm", formula = y~ bs(x, knots = c(120,160,180)),
+              se = FALSE)
+# MSE
+spline.train <- lm( acceleration ~ bs(horsepower, knots = c(120,160,180)),
+                    data = Auto[z,])
+mean((acceleration[-z] - predict(spline.train, newx=horsepower[-z]))^2) # test MSE
+@
+
+        % (c)
+          \item Fit a smoothing spline, selecting the smoothing parameter by cross-validation.
+<<3.c>>=
+MSE.hat <- rep(NA,100)
+for (k in 1:100){
+  d.f <- 2 + k/25
+  ss = smooth.spline(horsepower, acceleration, df = d.f) # spline.smooth(x,y)
+  MSE.hat[k] <- ss$cv.crit
+}
+2 + which.min(MSE.hat)/25 # best df
+# plot model
+ggplot(Auto, aes(y=acceleration, x=horsepower)) +
+  geom_point(alpha = .5) +
+  ggformula::geom_spline(df = 2 + which.min(MSE.hat)/25, col = "blue", lwd = 1.3)
+# MSE
+smooth.train <- smooth.spline(horsepower[z], acceleration[z],
+                              df = 2 + which.min(MSE.hat)/25)
+mean((acceleration[-z] - predict(smooth.train, x=horsepower[-z])$y)^2) # test MSE
+@
+
+        \end{enumerate}
+    For each method, make a plot of the resulting fitted line, and estimate its prediction mean squared error by some cross-validation technique. Which approach resulted in the best prediction accuracy?\\[5pt]
+    Smoothing spline gives the best prediction accuracy.
+  % 4.
+    \item \textbf{(For Stat-627 only... Chap. 7, \# 2, p. 298)} Suppose that a curve g is computed to smoothly fit a set of n points using the following formula
+    $$\hat{g} = arg \underbrace{min}_{g}\{\sum^{n}_{i=1} (y_i - g(x_i))^2 + \lambda\int[g^{(m)}(x)]^2 dx \}$$
+    where $g^{(m)}$ is the m-th derivative of $g$ (and $g^{(0)} = g$). Provide example sketches of $\hat{g}$ in each of the following scenarios.
+        \begin{enumerate}[(a)]
+<<4 pre, echo=FALSE>>=
+y <- acceleration
+x <- horsepower
+@
+
+        % (a)
+          \item $\lambda = \infty, m= 0$
+<<4.a, echo=FALSE, out.width="0.5\\linewidth", echo=FALSE, fig.align = "center">>=
+g.1 <- function(x){0}
+plot(y~x, ylim = c(0, max(y)))
+abline(a= 0, b=0, col = "red")
+@
+
+        % (b)
+          \item $\lambda = \infty, m= 1$
+<<4.b, echo=FALSE, out.width="0.5\\linewidth", echo=FALSE, fig.align = "center">>=
+plot(y~x, ylim = c(0, max(acceleration)))
+abline(a= mean(y), b=0, col = "red")
+@
+
+        % (c)
+          \item $\lambda = \infty, m= 2$
+<<4.c, echo=FALSE, out.width="0.5\\linewidth", echo=FALSE, fig.align = "center">>=
+plot(y~x, ylim = c(0, max(acceleration)))
+lines(smooth.spline(x, y, df = 2), col = "red")
+@
+
+        % (d)
+          \item $\lambda = \infty, m= 3$
+<<4.d, echo=FALSE, out.width="0.5\\linewidth", echo=FALSE, fig.align = "center">>=
+plot(y~x, ylim = c(0, max(acceleration)))
+lines(smooth.spline(x, y, df = 3), col = "red")
+@
+
+        % (e)
+          \item $\lambda = 0, m= 3$
+<<4.e, echo=FALSE, out.width="0.5\\linewidth", echo=FALSE, fig.align = "center">>=
+plot(y~x, ylim = c(0, max(acceleration)))
+lines(smooth.spline(x,y), col = "red")
+@
+        \end{enumerate}
+    This problem does not require you to take evaluate derivatives or integrals. Recall, however, that $g' = g'' = 0$ for a constant, $g' = const$ and $g'' = 0$ for a linear function $g(x)$, and $g'' = const$ for a quadratic function $g(x)$.
+	\end{enumerate}
+\end{document}

@@ -1,0 +1,178 @@
+\documentclass[12pt,fleqn]{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+% graphic
+\usepackage{picins}
+\usepackage{graphicx}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{\alph{enumi}.} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+<<include=FALSE>>=
+# Set global chunk options
+opts_chunk$set(echo = T,
+               warning = F,
+               message = F,
+               cache = T)
+invisible(lapply(c("knitr","kableExtra","tidyverse","ISLR"),library, character.only=TRUE))
+source("/Users/liubeixi/Desktop/ML/HW/mine/hw10/hw10.R")
+@
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework \#10: Trees (Chap. 8)}
+	\begin{enumerate}[1.]
+	% 1.
+	  \item \textbf{(Trees; Chap. 8, \# 4, p. 332)} Look at the figure below.
+	    \begin{enumerate}[(a)]
+	    % a.
+	      \item Sketch the tree corresponding to the partition of the predictor space in the left-hand panel of the
+figure. The numbers inside the boxes indicate the mean of Y within each region.\\
+      % b.
+      \parpic(4.3in,0in)[r]{\includegraphics[width=4in]{fig}}
+        \item Look at the tree in the right-hand panel of the same figure. Based on this tree, create a diagram similar to the left-hand panel of this figure. Divide the predictor space into the correct regions, and indicate the mean for each region.\\
+       \includegraphics[width=15cm, height=3cm]{1}\\
+	    \end{enumerate}
+  % 2.
+    \item \textbf{(Bagging; Chap. 8, \# 5, p. 332)} Suppose we produce ten bootstrapped samples from a data set containing red and green classes. We then apply a classification tree to each bootstrapped sample and, for a specific value of $X$, produce 10 estimates of $\boldsymbol{P}\{$Class is $\operatorname{Red} | X\} :$ 0.1, 0.15, 0.2, 0.2, 0.55, 0.6, 0.6, 0.65, 0.7, and 0.75.\\[10pt]
+    There are two common ways to combine these results together into a single class prediction. One is the majority vote approach discussed in this chapter. The second approach is to classify based on the average probability. In this example, what is the final classification under each of these two approaches?
+<<2>>=
+p <- c(0.1, 0.15, 0.2, 0.2, 0.55, 0.6, 0.6, 0.65, 0.7, 0.75)
+  # majority vote approach
+summary(p>0.5)
+  # average probability
+mean(p)
+@
+    Under the majority vote approach, the classification would be red. Under the average probability approach, the classification would be green.
+  % 3.
+    \item \textbf{(Project; Chap. 8, \# 9, p. 334)}\\
+    This problem involves the $\boldsymbol{OJ}$ (orange juice) data set which is part of the \texttt{ISLR} package. \texttt{library(ISLR)}; \texttt{attach(OJ)}; To find its description, type \texttt{?OJ}
+      \begin{enumerate}[(a)]
+      % a.
+        \item Create a training set containing a random sample of 800 observations, and a test set containing the remaining observations.
+<<3.a>>=
+set.seed(123)
+n <- nrow(OJ)
+train <- sample(n, 800)
+@
+
+      % b.
+        \item Fit a tree to the training data, with Purchase as the response and the other variables except for Buy as predictors. Use the \texttt{summary()} function to produce summary statistics about the tree, and describe the results obtained. What is the training error rate? How many terminal nodes does the tree have?
+
+<<3.b>>=
+class.tree <- tree(Purchase ~ ., data = OJ[train,])
+summary(class.tree)
+@
+        The training error rate is 0.1612 and the number of terminal nodes is 10.
+      % c.
+        \item Type in the name of the tree object in order to get a detailed text output. Pick one of the terminal nodes, and interpret the information displayed.
+<<3.c>>=
+class.tree
+@
+        For node 8), if Customer brand loyalty for CH is less than 0.0356415, the observation will be classified to MM. The sample size of this box is 56, and the deviance for this node is 10.030. Also in this box, the proportion of MM is 0.98214, and that of CH is 0.01786.
+      % d.
+        \item Create a plot of the tree, and interpret the results.
+<<3.d>>=
+plot(class.tree)
+text(class.tree)
+@
+      % e.
+        \item Predict the response on the test data, and produce a confusion matrix comparing the test labels to the predicted test labels. What is the test error rate?
+<<4.e>>=
+prediction <- predict(class.tree, newdata = OJ[-train,], type = "class")
+table(prediction,OJ$Purchase[-train])
+mean(prediction != OJ$Purchase[-train]) # test error rate
+@
+        The test error rate is 0.1777778.
+      % f.
+        \item Apply the \texttt{cv.tree()} function to the training set in order to determine the optimal tree size.
+<<4.f>>=
+cv <- cv.tree(class.tree, FUN = prune.misclass )
+@
+
+      % g.
+        \item Produce a plot with tree size on the x-axis and cross-validated classification error rate on the y-axis.
+<<4.g, out.width='15cm'>>=
+plot(cv)
+@
+
+      % h.
+        \item Which tree size corresponds to the lowest cross-validated classification error rate?
+<<4.h>>=
+cv$size[which.min(cv$dev)]
+@
+        The lowest cross-validated classification error rate is 2.
+      % i.
+        \item Produce a pruned tree corresponding to the optimal tree size obtained using cross-validation. If cross-validation does not lead to selection of a pruned tree, then create a pruned tree with five terminal nodes.
+<<4.i>>=
+tree.pruned <- prune.misclass( class.tree, best= cv$size[which.min(cv$dev)] )
+@
+
+      % j.
+        \item Compare the training error rates between the pruned and unpruned trees. Which is higher?
+<<4.j>>=
+train.pred <- predict(class.tree, newdata = OJ[train,], type = "class")
+mean(train.pred != OJ$Purchase[train]) # train error rate
+train.pred.pruned <- predict(tree.pruned, newdata = OJ[train,], type = "class")
+mean(train.pred.pruned != OJ$Purchase[train]) # train error rate. pruned
+@
+        The training error rate of the pruned trees is higher.
+      % k.
+        \item Compare the test error rates between the pruned and unpruned trees. Which is higher?
+<<4.k>>=
+prediction.pruned <- predict(tree.pruned, newdata = OJ[-train,], type = "class")
+mean(prediction.pruned != OJ$Purchase[-train])
+@
+        The test error rate of the pruned tree is $0.1888889 > 0.1777778$, the test error rate of pruned tree.
+      \end{enumerate}
+	\end{enumerate}
+\end{document}

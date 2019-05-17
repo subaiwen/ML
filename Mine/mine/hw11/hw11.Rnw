@@ -1,0 +1,207 @@
+\documentclass[12pt,fleqn]{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{\alph{enumi}.} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+<<include=FALSE>>=
+# Set global chunk options
+opts_chunk$set(echo = T,
+               warning = F,
+               message = F,
+               cache = T)
+invisible(lapply(c("knitr","kableExtra","tidyverse","ISLR"),library, character.only=TRUE))
+source("/Users/liubeixi/Desktop/ML/HW/mine/hw11/hw11.R")
+@
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework \# 11: Support Vector Machines (Chap. 9)}
+	\begin{enumerate}[1.]
+	% 1.
+	  \item \textbf{(Chap. 9, \# 1a, p. 368)} This problem involves a hyperplane in two dimensions. Sketch the hyperplane $1+3 X_{1}-X_{2}=0$. Indicate the set of points for which $1+3 X_{1}-X_{2}>0$, as well as the set of points for which $1+3 X_{1}-X_{2}<0$.\\
+<<1, echo=FALSE,fig.align="center",out.width="0.5\\linewidth">>=
+curve(1+3*x, -5, 5)
+@
+    For the points which $1+3 X_{1}-X_{2}<0$, they are colored red. For the points which $1+3 X_{1}-X_{2}>0$, they are colored blue.
+  % 2.
+    \item \textbf{(Chap. 9, \# 2, p. 368)} We have seen that in p = 2 dimensions, a linear decision boundary takes the form $\beta_{0}+\beta_{1} X_{1}+\beta_{2} X_{2}=0$. We now investigate a \textbf{non-linear} decision boundary.
+        \begin{enumerate}[(a)]
+        % (a)
+          \item Sketch the curve $\left(1+X_{1}\right)^{2}+\left(2-X_{2}\right)^{2}=4$.\\
+<<2.a, echo=FALSE,fig.align="center",out.width="0.6\\linewidth">>=
+ggplot(dat,aes(x,y)) + geom_path() + xlim(-4,2) + ylim(-1, 5)
+@
+
+        % (b)
+          \item On your sketch, indicate the set of points for which $\left(1+X_{1}\right)^{2}+\left(2-X_{2}\right)^{2}>4$, as well as the set of points for which $\left(1+X_{1}\right)^{2}+\left(2-X_{2}\right)^{2} \leq 4$.\\
+<<2.b, echo=FALSE,fig.align="center",out.width="0.6\\linewidth">>=
+ggplot(dat,aes(x,y)) + geom_path() + xlim(-4,2) + ylim(-1, 5)
+@
+        Blue points indicate $\left(1+X_{1}\right)^{2}+\left(2-X_{2}\right)^{2}>4$, while red points indicate $\left(1+X_{1}\right)^{2}+\left(2-X_{2}\right)^{2} \leq 4$.
+        % (c)
+          \item Suppose that a classifier assigns an observation to the blue class if $\left(1+X_{1}\right)^{2}+\left(2-X_{2}\right)^{2}>4$, and to the red class otherwise. To what class is the observation (0, 0) classified? (-1, 1)? (2,2)? (3,8)?\\
+<<2.c, echo=FALSE,fig.align="center",out.width="0.6\\linewidth", out.height="0.8\\linewidth">>=
+ggplot(dat,aes(x,y)) + geom_path() + geom_point(data = dat.new[c(1,3,4),],col = 'blue') + geom_point(data = dat.new[2,], col = 'red')
+@
+          The observation (0, 0), (2,2), (3,8) are classified as blue while (-1, 1) is classified as red.
+        % (d)
+          \item Argue that while the decision boundary in (c) is not linear in terms of $X_1$ and $X_2$, it is linear in terms of $X_1$, $X_1^2$, $X_2$, and $X_2^2$.
+          \begin{align*}
+              &\left(1+X_{1}\right)^{2}+\left(2-X_{2}\right)^{2}\\
+            = &1 + 2X_{1} + X_{1}^2 + 4 - 4X_{2} + X_{2}^2\\
+            = &5 + 2X_{1} + X_{1}^2 + 4 - 4X_{2} + X_{2}^2
+          \end{align*}
+        \end{enumerate}
+  % 3.
+    \item \textbf{(Chap. 9, \# 3, p. 368)} Here we explore the maximal margin classifier on a toy data set.
+        \begin{enumerate}[(a)]
+        % a.
+          \item We are given $n = 7$ observations in $p = 2$ dimensions. For each observation, there is an associated class label.\\
+            \begin{center}
+              \includegraphics[scale=0.65]{table}
+            \end{center}
+            Sketch the observations.\\
+<<3.a, echo = FALSE,fig.align="center",out.width="0.8\\linewidth">>=
+plot.a
+@
+
+        % b.
+          \item Sketch the optimal separating hyperplane, and provide the equation for this hyperplane such as in exercise \#1.\\
+<<3.b, echo = FALSE,fig.align="center",out.width="0.8\\linewidth">>=
+plot.a +
+  geom_abline(intercept = 0, slope = 1, lty = 2) +
+  geom_abline(intercept = -1, slope = 1, lty = 2) +
+  geom_abline(intercept = -0.5, slope = 1, lty = 1)
+@
+
+        % c.
+          \item Describe the classification rule for the maximal margin classifier. It should be something along the lines of "Classify to Red if $\beta_{0}+\beta_{1} X_{1}+\beta_{2} X_{2}>0$, and classify to Blue otherwise". Provide the values for $beta_0$, $beta_1$, and $beta_2$.\\
+          The observation is classified to Red if $0.5 - X_{1} + X_{2}>0$, and classified to Blue otherwise. $beta_0 = 0.5$, $beta_1 = -1$, and $beta_2 = 1$.
+        % d.
+          \item On your sketch, indicate the margin for the maximal margin hyperplane.\\
+          Maximal margin: $M=\frac{\sqrt{0.5^2+0.5^2}}{2}=\frac{\sqrt{2}}{4}$.
+        % e.
+          \item Indicate the support vectors for the maximal margin classifier.\\
+<<3.e, echo = FALSE,fig.align="center",out.width="0.8\\linewidth">>=
+s <- svm(y ~ ., data = dots, kernel = 'linear', cost = 1)
+plot.a + geom_point(data = dots[s$index,], pch = 5, cex = 4)
+@
+        The points (2,1), (2,2), (4,3) and (4,4) are the support vectors.
+        % f.
+          \item Argue that a slight movement of the seventh observation would not affect the maximal margin hyperplane.
+<<3.f, echo = FALSE,fig.align="center",out.width="0.8\\linewidth">>=
+plot.a +
+  geom_abline(intercept = 0, slope = 1, lty = 2) +
+  geom_abline(intercept = -1, slope = 1, lty = 2) +
+  geom_point(data = dots[7,], pch = 2, cex = 4, col = 'red')
+@
+        For the seventh observation, (4,1), a slight movement would not affect the maximal margin hyperplane as long as it does not enter the existed hyperplane.
+        % g.
+          \item Sketch a hyperplane that is not the optimal separating hyperplane, and provide the equation for this hyperplane.
+<<3.g, echo=FALSE,fig.align="center",out.width="0.8\\linewidth">>=
+plot.a + geom_abline(intercept = -0.3, slope = 0.9, lty = 1)
+@
+        This hyperplane is not optimal since it does not generate the largest margin, and the equation for this hyperplane is $0.3 - 0.9X_{1} + X_{2}=0$
+        % h.
+          \item Draw an additional observation on the plot so that the two classes are no longer separable by a hyperplane.
+<<3.h, echo=FALSE,fig.align="center",out.width="0.8\\linewidth">>=
+plot.a +
+  geom_point(data= data.frame(x1=4,x2=2), col = 'red')
+@
+
+        \end{enumerate}
+  % 4.
+    \item \textbf{(Chap. 9, \# 7, p. 371)} In this problem, you will use support vector approaches in order to predict whether a given car gets high or low gas mileage based on the Auto data set (from \texttt{ISLR}).
+      \begin{enumerate}
+      % a.
+        \item Create a binary variable that takes on a 1 for cars with gas mileage above the median, and a 0 for cars with gas mileage below the median.
+<<4.a>>=
+Auto$mileage <- rep(1,nrow(Auto))
+Auto$mileage[Auto$mpg < median(Auto$mpg)] <- 0
+Auto$mileage <- as.factor(Auto$mileage)
+@
+
+      % b.
+        \item Fit a support vector classifier to the data with various values of cost, in order to predict whether a car gets high or low gas mileage. Report the cross-validation errors associated with different values of this parameter. Comment on your results.
+<<4.b>>=
+set.seed(444)
+s.b <- tune(svm, mileage ~ weight + year, data = Auto,
+                 ranges = list(cost = 10^seq(-3,3,1), kernel = 'linear'))
+summary(s.b)
+s.b.2 <- tune(svm, mileage ~ weight + year, data = Auto,
+              ranges = list(cost = seq(0.01,0.2,0.005), kernel = 'linear'))
+summary(s.b.2)
+@
+        The best cost from the output of the 10-fold cross validation is 0.02, with the lowest cross-validation error 0.08935897.
+
+      % c.
+        \item Now repeat (b), this time using SVMs with radial and polynomial basis kernels. Comment on your results.
+<<4.c>>=
+set.seed(444)
+s.c <- tune(svm, mileage ~ weight + year, data = Auto, ranges = list(
+  cost = seq(0.01,0.2,0.005), kernel = c('linear','radial','polynomial')))
+summary(s.c)
+@
+        The best tuning parameters from the output of the 10-fold cross validation are 0.025 for cost and linear kernel, with the lowest cross-validation error 0.08423077.
+      % d.
+        \item Make some plots to back up your assertions in (b) and (c). When $p > 2$, you can use the \texttt{plot()} function to create plots displaying pairs of variables at a time. For example, to plot horsepower and year, the syntax is \texttt{plot(svm.result, data=Auto, horsepower$\sim$year)}.
+<<4.d>>=
+svm.b <- svm(mileage~weight+year, data = Auto, kernel = 'linear', cost = 0.02)
+svm.c <- svm(mileage~weight+year, data = Auto, kernel = 'linear', cost = 0.025)
+plot(svm.b, data=Auto, weight~year)
+plot(svm.c, data=Auto, weight~year)
+@
+      \end{enumerate}
+	\end{enumerate}
+\end{document}

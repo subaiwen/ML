@@ -1,0 +1,383 @@
+\documentclass[12pt,fleqn]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{\alph{enumi}.} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework \#8: Variable Selection and Shrinkage}
+
+	\begin{enumerate}[1.]
+% 1.
+    \item \textbf{(Real data analysis - Chap. 6, \# 9, p.263)}\\
+    Predict the number of applications received based on the other variables in the \textbf{College} data set. This data set is from our textbook. To access it, you can type \texttt{library(ISLR)}; \texttt{attach(College)}. Fit
+		  \begin{enumerate}[(a)]
+		  % (a)
+  			\item Least squares regression, selecting the best model;
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{set.seed}\hlstd{(}\hlnum{666}\hlstd{)}
+\hlstd{n} \hlkwb{<-} \hlkwd{nrow}\hlstd{(College)}
+\hlstd{z} \hlkwb{<-} \hlkwd{sample}\hlstd{(n,n}\hlopt{/}\hlnum{2}\hlstd{)}
+\hlstd{train} \hlkwb{<-} \hlstd{College[z,]}
+\hlstd{test} \hlkwb{<-} \hlstd{College[}\hlopt{-}\hlstd{z,]}
+\hlcom{## (a) LSE}
+\hlstd{reg.fit} \hlkwb{<-} \hlkwd{regsubsets}\hlstd{(Apps} \hlopt{~} \hlstd{.,} \hlkwc{data} \hlstd{= College)} \hlcom{# leaps}
+\hlkwd{summary}\hlstd{(reg.fit)}
+\end{alltt}
+\begin{verbatim}
+## Subset selection object
+## Call: regsubsets.formula(Apps ~ ., data = College)
+## 17 Variables  (and intercept)
+##             Forced in Forced out
+## PrivateYes      FALSE      FALSE
+## Accept          FALSE      FALSE
+## Enroll          FALSE      FALSE
+## Top10perc       FALSE      FALSE
+## Top25perc       FALSE      FALSE
+## F.Undergrad     FALSE      FALSE
+## P.Undergrad     FALSE      FALSE
+## Outstate        FALSE      FALSE
+## Room.Board      FALSE      FALSE
+## Books           FALSE      FALSE
+## Personal        FALSE      FALSE
+## PhD             FALSE      FALSE
+## Terminal        FALSE      FALSE
+## S.F.Ratio       FALSE      FALSE
+## perc.alumni     FALSE      FALSE
+## Expend          FALSE      FALSE
+## Grad.Rate       FALSE      FALSE
+## 1 subsets of each size up to 8
+## Selection Algorithm: exhaustive
+##          PrivateYes Accept Enroll Top10perc Top25perc F.Undergrad
+## 1  ( 1 ) " "        "*"    " "    " "       " "       " "        
+## 2  ( 1 ) " "        "*"    " "    "*"       " "       " "        
+## 3  ( 1 ) " "        "*"    " "    "*"       " "       " "        
+## 4  ( 1 ) " "        "*"    " "    "*"       " "       " "        
+## 5  ( 1 ) " "        "*"    "*"    "*"       " "       " "        
+## 6  ( 1 ) " "        "*"    "*"    "*"       " "       " "        
+## 7  ( 1 ) " "        "*"    "*"    "*"       "*"       " "        
+## 8  ( 1 ) "*"        "*"    "*"    "*"       " "       " "        
+##          P.Undergrad Outstate Room.Board Books Personal PhD Terminal
+## 1  ( 1 ) " "         " "      " "        " "   " "      " " " "     
+## 2  ( 1 ) " "         " "      " "        " "   " "      " " " "     
+## 3  ( 1 ) " "         " "      " "        " "   " "      " " " "     
+## 4  ( 1 ) " "         "*"      " "        " "   " "      " " " "     
+## 5  ( 1 ) " "         "*"      " "        " "   " "      " " " "     
+## 6  ( 1 ) " "         "*"      "*"        " "   " "      " " " "     
+## 7  ( 1 ) " "         "*"      "*"        " "   " "      " " " "     
+## 8  ( 1 ) " "         "*"      "*"        " "   " "      "*" " "     
+##          S.F.Ratio perc.alumni Expend Grad.Rate
+## 1  ( 1 ) " "       " "         " "    " "      
+## 2  ( 1 ) " "       " "         " "    " "      
+## 3  ( 1 ) " "       " "         "*"    " "      
+## 4  ( 1 ) " "       " "         "*"    " "      
+## 5  ( 1 ) " "       " "         "*"    " "      
+## 6  ( 1 ) " "       " "         "*"    " "      
+## 7  ( 1 ) " "       " "         "*"    " "      
+## 8  ( 1 ) " "       " "         "*"    " "
+\end{verbatim}
+\begin{alltt}
+\hlkwd{which.max}\hlstd{(}\hlkwd{summary}\hlstd{(reg.fit)}\hlopt{$}\hlstd{adjr2)} \hlcom{# Adjusted R2}
+\end{alltt}
+\begin{verbatim}
+## [1] 8
+\end{verbatim}
+\begin{alltt}
+\hlkwd{which.min}\hlstd{(}\hlkwd{summary}\hlstd{(reg.fit)}\hlopt{$}\hlstd{cp)}  \hlcom{# Mallows Cp}
+\end{alltt}
+\begin{verbatim}
+## [1] 8
+\end{verbatim}
+\begin{alltt}
+\hlkwd{which.min}\hlstd{(}\hlkwd{summary}\hlstd{(reg.fit)}\hlopt{$}\hlstd{bic)}  \hlcom{# BIC = Bayesian information criterion}
+\end{alltt}
+\begin{verbatim}
+## [1] 8
+\end{verbatim}
+\begin{alltt}
+    \hlcom{# 8 predictors}
+\hlkwd{summary}\hlstd{(reg.fit)}\hlopt{$}\hlstd{which[}\hlnum{8}\hlstd{,]} \hlcom{# predictors}
+\end{alltt}
+\begin{verbatim}
+## (Intercept)  PrivateYes      Accept      Enroll   Top10perc   Top25perc 
+##        TRUE        TRUE        TRUE        TRUE        TRUE       FALSE 
+## F.Undergrad P.Undergrad    Outstate  Room.Board       Books    Personal 
+##       FALSE       FALSE        TRUE        TRUE       FALSE       FALSE 
+##         PhD    Terminal   S.F.Ratio perc.alumni      Expend   Grad.Rate 
+##        TRUE       FALSE       FALSE       FALSE        TRUE       FALSE
+\end{verbatim}
+\begin{alltt}
+\hlstd{reg} \hlkwb{<-} \hlkwd{lm}\hlstd{(Apps} \hlopt{~} \hlstd{Private} \hlopt{+} \hlstd{Accept} \hlopt{+} \hlstd{Enroll} \hlopt{+} \hlstd{Top10perc} \hlopt{+} \hlstd{Outstate} \hlopt{+} \hlstd{Room.Board} \hlopt{+} \hlstd{PhD} \hlopt{+} \hlstd{Expend,} \hlkwc{data} \hlstd{= College)}
+\hlkwd{summary}\hlstd{(reg)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Apps ~ Private + Accept + Enroll + Top10perc + Outstate + 
+##     Room.Board + PhD + Expend, data = College)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5014.0  -440.9   -16.1   323.0  7822.9 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -161.21352  233.71986  -0.690 0.490546    
+## PrivateYes  -536.94435  132.84967  -4.042 5.84e-05 ***
+## Accept         1.58311    0.04016  39.421  < 2e-16 ***
+## Enroll        -0.56700    0.11165  -5.079 4.78e-07 ***
+## Top10perc     37.29291    3.19325  11.679  < 2e-16 ***
+## Outstate      -0.08659    0.01797  -4.817 1.75e-06 ***
+## Room.Board     0.17216    0.04694   3.668 0.000262 ***
+## PhD          -11.22089    3.10707  -3.611 0.000324 ***
+## Expend         0.07670    0.01117   6.868 1.34e-11 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1052 on 768 degrees of freedom
+## Multiple R-squared:  0.9269,	Adjusted R-squared:  0.9261 
+## F-statistic:  1217 on 8 and 768 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\begin{alltt}
+    \hlcom{# Validation set approach}
+\hlstd{ols.reg} \hlkwb{<-} \hlkwd{glm}\hlstd{(Apps} \hlopt{~} \hlstd{Private} \hlopt{+} \hlstd{Accept} \hlopt{+} \hlstd{Enroll} \hlopt{+} \hlstd{Top10perc} \hlopt{+} \hlstd{Outstate} \hlopt{+} \hlstd{Room.Board} \hlopt{+} \hlstd{PhD} \hlopt{+} \hlstd{Expend,} \hlkwc{data} \hlstd{= train)}
+\hlstd{y.hat} \hlkwb{<-} \hlkwd{predict}\hlstd{(ols.reg, test)}
+\hlstd{(err.lm} \hlkwb{<-} \hlkwd{mean}\hlstd{((test}\hlopt{$}\hlstd{Apps} \hlopt{-} \hlstd{y.hat)}\hlopt{^}\hlnum{2}\hlstd{))}  \hlcom{# test error}
+\end{alltt}
+\begin{verbatim}
+## [1] 1559802
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+  		% (b)
+			  \item Ridge regression, with $\lambda$ chosen by cross-validation;
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{reg} \hlkwb{<-} \hlkwd{lm}\hlstd{(Apps} \hlopt{~}\hlstd{Private} \hlopt{+} \hlstd{Accept} \hlopt{+} \hlstd{Enroll} \hlopt{+} \hlstd{Top10perc} \hlopt{+} \hlstd{Outstate} \hlopt{+} \hlstd{Room.Board} \hlopt{+} \hlstd{PhD} \hlopt{+} \hlstd{Expend,} \hlkwc{data} \hlstd{= train)}
+\hlstd{X} \hlkwb{<-} \hlkwd{model.matrix}\hlstd{(reg)}
+\hlstd{Y} \hlkwb{<-} \hlstd{Apps[z]}
+\hlstd{cv.ridge} \hlkwb{<-} \hlkwd{cv.glmnet}\hlstd{(X,Y,}\hlkwc{alpha}\hlstd{=}\hlnum{0}\hlstd{,} \hlkwc{nfolds} \hlstd{=} \hlnum{10}\hlstd{,} \hlkwc{lambda} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{40}\hlstd{,}\hlnum{0.01}\hlstd{))} \hlcom{# library(glmnet)}
+\hlstd{(lambda} \hlkwb{<-} \hlstd{cv.ridge}\hlopt{$}\hlstd{lambda.min)} \hlcom{# cv least lambda}
+\end{alltt}
+\begin{verbatim}
+## [1] 15.53
+\end{verbatim}
+\begin{alltt}
+\hlstd{X.test} \hlkwb{<-} \hlkwd{model.matrix}\hlstd{(Apps} \hlopt{~}\hlstd{Private} \hlopt{+} \hlstd{Accept} \hlopt{+} \hlstd{Enroll} \hlopt{+} \hlstd{Top10perc} \hlopt{+} \hlstd{Outstate} \hlopt{+} \hlstd{Room.Board} \hlopt{+} \hlstd{PhD} \hlopt{+} \hlstd{Expend,} \hlkwc{data} \hlstd{= test)}
+\hlstd{y.hat.ridge} \hlkwb{<-} \hlkwd{predict}\hlstd{(cv.ridge,} \hlkwc{s}\hlstd{=lambda,} \hlkwc{newx}\hlstd{=X.test)} \hlcom{# s: Value(s) of the penalty parameter lambda}
+\hlstd{(err.ridge} \hlkwb{<-} \hlkwd{mean}\hlstd{((test}\hlopt{$}\hlstd{Apps} \hlopt{-} \hlstd{y.hat.ridge)}\hlopt{^}\hlnum{2}\hlstd{))}  \hlcom{# test error}
+\end{alltt}
+\begin{verbatim}
+## [1] 1618175
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+			% (c)
+			  \item Lasso, with $\lambda$ chosen by cross-validation;
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{cv.lasso} \hlkwb{<-} \hlkwd{cv.glmnet}\hlstd{(X,Y,}\hlkwc{alpha}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{nfolds} \hlstd{=} \hlnum{10}\hlstd{,} \hlkwc{lambda} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{40}\hlstd{,}\hlnum{0.01}\hlstd{))} \hlcom{# library(glmnet)}
+\hlstd{(lambda} \hlkwb{<-}\hlstd{cv.lasso}\hlopt{$}\hlstd{lambda.min)} \hlcom{# cv least lambda}
+\end{alltt}
+\begin{verbatim}
+## [1] 8.52
+\end{verbatim}
+\begin{alltt}
+\hlstd{y.hat.lasso} \hlkwb{<-} \hlkwd{predict}\hlstd{(cv.lasso,} \hlkwc{s}\hlstd{=lambda,} \hlkwc{newx}\hlstd{=X.test)}
+\hlstd{(err.lasso} \hlkwb{<-} \hlkwd{mean}\hlstd{((test}\hlopt{$}\hlstd{Apps} \hlopt{-} \hlstd{y.hat.lasso)}\hlopt{^}\hlnum{2}\hlstd{))}  \hlcom{# test error}
+\end{alltt}
+\begin{verbatim}
+## [1] 1574253
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+			% (d)
+			  \item PCR model, with M, the number of principal components, chosen by cross-validation;
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{cv.prin} \hlkwb{<-} \hlkwd{pcr}\hlstd{(Apps} \hlopt{~}\hlstd{Private} \hlopt{+} \hlstd{Accept} \hlopt{+} \hlstd{Enroll} \hlopt{+} \hlstd{Top10perc} \hlopt{+} \hlstd{Outstate} \hlopt{+} \hlstd{Room.Board} \hlopt{+} \hlstd{PhD} \hlopt{+} \hlstd{Expend,}
+                \hlkwc{data} \hlstd{= train,} \hlkwc{scale} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{validation} \hlstd{=} \hlstr{"CV"}\hlstd{)} \hlcom{# library(pls)}
+\hlkwd{validationplot}\hlstd{(cv.prin,} \hlkwc{val.type}\hlstd{=}\hlstr{"MSEP"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/d-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{MSEP}\hlstd{(cv.prin)} \hlcom{# MSE}
+\end{alltt}
+\begin{verbatim}
+##        (Intercept)  1 comps  2 comps  3 comps  4 comps  5 comps  6 comps
+## CV        11805563  9137916  2018144  1567400  1111387  1135906  1157303
+## adjCV     11805563  9142203  2012224  1553499  1104288  1128459  1148248
+##        7 comps  8 comps
+## CV     1168872   933138
+## adjCV  1159142   926117
+\end{verbatim}
+\begin{alltt}
+\hlstd{y.hat.pcr} \hlkwb{<-} \hlkwd{predict}\hlstd{(cv.prin, test,} \hlkwc{ncomp}\hlstd{=}\hlnum{8}\hlstd{)}
+\hlstd{(err.pcr} \hlkwb{<-} \hlkwd{mean}\hlstd{((test}\hlopt{$}\hlstd{Apps} \hlopt{-} \hlstd{y.hat.pcr)}\hlopt{^}\hlnum{2}\hlstd{))}  \hlcom{# test error}
+\end{alltt}
+\begin{verbatim}
+## [1] 1559802
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+			% (e)
+			  \item PLS model, with M chosen by cross-validation.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{cv.plsr} \hlkwb{<-} \hlkwd{plsr}\hlstd{(Apps} \hlopt{~}\hlstd{Private} \hlopt{+} \hlstd{Accept} \hlopt{+} \hlstd{Enroll} \hlopt{+} \hlstd{Top10perc} \hlopt{+} \hlstd{Outstate} \hlopt{+} \hlstd{Room.Board} \hlopt{+} \hlstd{PhD} \hlopt{+} \hlstd{Expend,}
+               \hlkwc{data} \hlstd{= train,} \hlkwc{scale} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{validation} \hlstd{=} \hlstr{"CV"}\hlstd{)} \hlcom{# library(pls)}
+\hlkwd{validationplot}\hlstd{(cv.plsr,} \hlkwc{val.type}\hlstd{=}\hlstr{"MSEP"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/e-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{MSEP}\hlstd{(cv.plsr)} \hlcom{# MSE}
+\end{alltt}
+\begin{verbatim}
+##        (Intercept)  1 comps  2 comps  3 comps  4 comps  5 comps  6 comps
+## CV        11805563  1714639  1314103  1049161  1034921   959266   897986
+## adjCV     11805563  1709056  1311067  1044698  1028442   947591   892962
+##        7 comps  8 comps
+## CV      902867   901293
+## adjCV   897535   896123
+\end{verbatim}
+\begin{alltt}
+\hlstd{y.hat.plsr} \hlkwb{<-} \hlkwd{predict}\hlstd{(cv.plsr, test,} \hlkwc{ncomp}\hlstd{=}\hlnum{8}\hlstd{)}
+\hlstd{(err.plsr} \hlkwb{<-} \hlkwd{mean}\hlstd{((test}\hlopt{$}\hlstd{Apps} \hlopt{-} \hlstd{y.hat.plsr)}\hlopt{^}\hlnum{2}\hlstd{))}  \hlcom{# test error}
+\end{alltt}
+\begin{verbatim}
+## [1] 1559802
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+			\end{enumerate}
+		Evaluate performance of each method in terms of prediction accuracy. Report prediction mean squared errors obtained by cross-validation.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##       err.lm err.ridge err.lasso err.pcr err.plsr
+## [1,] 1559802   1618175   1574253 1559802  1559802
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+		Comment on the results obtained. How accurately can we predict the number of college applications? Is there much difference among the test errors resulting from these five approaches? Which method appears most accurate?\\[5pt]
+		The OLS regression, PCR, PLS yields the lowest testing MSE. Since PCR and PLS do not reduce the dimension the predictors, in other words, they use the model of OLS. So OLS regression appears to be most accurate.
+	\end{enumerate}
+\end{document}

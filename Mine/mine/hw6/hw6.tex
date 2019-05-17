@@ -1,0 +1,297 @@
+\documentclass[12pt,fleqn]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{\alph{enumi}.} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework \#6}
+% 1.
+	\begin{problem} \textbf{(Jackknife and Bootstrap, continuing from the previous h/w)} Using your knowledge of the definition expected value complete the following:
+		One needs to estimate $\theta$, the frequency of days with 0 traffic accidents on a certain highway. The data are collected. During 40 days, there are 26 days with 0 accidents, 10 days with 1 accident, and 4 days with 2 accidents.\\
+  Statistician A estimates $\theta$ with a sample proportion $\hat{p} = 26/40 = 0.65$.\\
+  Statistician B argues that this method does not distinguish between the days with 1 accident and the days with 2 accidents, losing some valuable information. She suggests to model the number of accidents X by a Poisson distribution with parameter $\lambda$. Then we have $\theta = \boldmath{P}\{X = 0\} = exp(-\lambda)$. She estimates $\lambda$ with $\hat{\lambda} = \bar{X}$. Then $\hat{\theta} = exp(-\hat{\lambda})$. However, this estimator is biased.
+    \begin{enumerate}[(a)]
+    % (a)
+      \item Now we have three competing estimators - $\hat{p}$, $\hat{\theta}$, and $\hat{\theta_{JK}}$. Use bootstrap to estimate their standard deviations.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{set.seed}\hlstd{(}\hlnum{666}\hlstd{)}
+\hlstd{accident} \hlkwb{<-} \hlkwd{sample}\hlstd{(} \hlkwd{c}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{26}\hlstd{),}\hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{10}\hlstd{),}\hlkwd{rep}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{)) )}
+\hlstd{B} \hlkwb{<-} \hlnum{10000}
+\hlstd{n} \hlkwb{<-} \hlkwd{length}\hlstd{(accident)}
+\hlcom{# estimations}
+\hlstd{p} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(} \hlkwd{mean}\hlstd{(x} \hlopt{==} \hlnum{0}\hlstd{) )\}} \hlcom{# p.hat}
+\hlstd{theta} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(} \hlkwd{exp}\hlstd{(} \hlopt{-} \hlkwd{mean}\hlstd{(x) ) )\}} \hlcom{# theta.hat}
+\hlstd{theta.jk} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{} \hlcom{# theta.hat.jk}
+  \hlstd{jk} \hlkwb{<-} \hlkwd{theta}\hlstd{(x)} \hlopt{-} \hlkwd{jackknife}\hlstd{( x, theta )}\hlopt{$}\hlstd{jack.bias}
+  \hlkwd{return}\hlstd{(jk)\}}
+\hlcom{# container}
+\hlstd{p.boot} \hlkwb{<-} \hlstd{theta.boot} \hlkwb{<-} \hlstd{theta.jk.boot} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{,n)}
+\hlcom{# std. p.hat}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{}
+  \hlstd{clone} \hlkwb{<-} \hlkwd{sample}\hlstd{(accident, n,} \hlkwc{replace} \hlstd{= T)}
+  \hlstd{p.boot[i]} \hlkwb{<-} \hlkwd{p}\hlstd{(clone)}
+  \hlstd{theta.boot[i]} \hlkwb{<-} \hlkwd{theta}\hlstd{(clone)}
+  \hlstd{theta.jk.boot[i]} \hlkwb{<-} \hlkwd{theta.jk}\hlstd{(clone)}
+\hlstd{\}}
+\hlkwd{kable}\hlstd{(}\hlkwd{cbind}\hlstd{(}\hlstr{'$\textbackslash{}\textbackslash{}hat\{Std\}(\textbackslash{}\textbackslash{}hat\{p\})$'} \hlstd{=} \hlkwd{sd}\hlstd{(p.boot),}
+            \hlstr{'$\textbackslash{}\textbackslash{}hat\{Std\}(\textbackslash{}\textbackslash{}hat\{\textbackslash{}\textbackslash{}theta\})$'} \hlstd{=} \hlkwd{sd}\hlstd{(theta.boot),}
+            \hlstr{'$\textbackslash{}\textbackslash{}hat\{Std\}(\textbackslash{}\textbackslash{}hat\{\textbackslash{}\textbackslash{}theta_\{JK\}\})$'} \hlstd{=} \hlkwd{sd}\hlstd{(theta.jk.boot)),}
+      \hlkwc{escape} \hlstd{= F)}
+\end{alltt}
+\end{kframe}
+\begin{tabular}{r|r|r}
+\hline
+$\hat{Std}(\hat{p})$ & $\hat{Std}(\hat{\theta})$ & $\hat{Std}(\hat{\theta_{JK}})$\\
+\hline
+0.0760843 & 0.0680744 & 0.0683877\\
+\hline
+\end{tabular}
+
+
+\end{knitrout}
+
+    % (b)
+      \item Compare our three estimators of $\theta$ according to their bias and standard error.\\
+      $\hat{p}$ is an unbias estimator, but since it lose some valuable information, it has the highest standard error among three estimators. $\hat{\theta_{JK}}$ slightly reduces the bias of the $\hat{\theta}$, but also increases the standard error at the meanwhile.
+		\end{enumerate}
+	\end{problem}
+% 2.
+  \begin{problem} We will now consider the \texttt{Boston} housing data set, from the \texttt{MASS} library.
+    \begin{enumerate}[(a)]
+    % a.
+      \item Based on this data set, provide an estimate for the population mean $\mu$ of \texttt{medv}, which is the median value of owner-occupied homes in \$1000s. Call this estimate $\hat{\mu}$.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{mu.hat} \hlkwb{<-} \hlkwd{mean}\hlstd{(Boston}\hlopt{$}\hlstd{medv)}
+\hlstd{mu.hat}
+\end{alltt}
+\begin{verbatim}
+## [1] 22.53281
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The estimation: $\hat{\mu} = \sum_{i=1}^{n}medv_i = 22.53281$
+    % b.
+      \item Provide an estimate of the standard error of $\hat{\mu}$ (as we know, $Std\bar{X} = \sigma/\sqrt{n}$).
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{n} \hlkwb{<-} \hlkwd{nrow}\hlstd{(Boston)}
+\hlstd{s} \hlkwb{<-} \hlkwd{sd}\hlstd{(Boston}\hlopt{$}\hlstd{medv)}\hlopt{/}\hlkwd{sqrt}\hlstd{(n)}
+\hlstd{s}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.4088611
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      An estimate of the standard error of $\hat{\mu}$:  $Std(\bar{X}) = \sqrt{\frac{\sum_{i=1}^{n}(X_i - \bar{X})^2}{n-1}} = 0.4088611$
+    % c.
+      \item Now estimate the standard error of $\hat{\mu}$ using the \texttt{bootstrap}. How does this compare to your answer from (b)?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{set.seed}\hlstd{(}\hlnum{666}\hlstd{)}
+\hlstd{mu} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{,}\hlkwc{sample}\hlstd{) \{}\hlkwd{return}\hlstd{(} \hlkwd{mean}\hlstd{(x[sample]) )\}}
+\hlkwd{boot}\hlstd{(Boston}\hlopt{$}\hlstd{medv, mu,} \hlkwc{R} \hlstd{=} \hlnum{10000}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = Boston$medv, statistic = mu, R = 10000)
+## 
+## 
+## Bootstrap Statistics :
+##     original      bias    std. error
+## t1* 22.53281 0.001258636   0.4069227
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The estimated standard error of $\hat{\mu}$ under bootstrap: $\hat{Std}(\bar{X}_{boot}) = 0.4058625$. It is very closed to the estimation in part (b).
+    % d.
+      \item Based on your bootstrap estimate from (c), provide a 95 \% confidence interval for $\mu$. A popular approximation is $\hat{\mu} \pm 2 \hat{Std}(\hat{\mu})$. Compare it to the results obtained using \texttt{R} command \texttt{t.test(Boston\$medv)}.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# bootstrap result}
+\hlstd{mu.boot} \hlkwb{<-} \hlkwd{boot}\hlstd{(Boston}\hlopt{$}\hlstd{medv, mu,} \hlkwc{R} \hlstd{=} \hlnum{10000}\hlstd{)}\hlopt{$}\hlstd{t}
+\hlkwd{cbind}\hlstd{(}\hlstr{'lower bound'} \hlstd{=} \hlkwd{mean}\hlstd{(mu.boot)}\hlopt{-}\hlnum{2}\hlopt{*}\hlkwd{sd}\hlstd{(mu.boot),}
+      \hlstr{'upper bound'} \hlstd{=} \hlkwd{mean}\hlstd{(mu.boot)}\hlopt{+}\hlnum{2}\hlopt{*}\hlkwd{sd}\hlstd{(mu.boot))}
+\end{alltt}
+\begin{verbatim}
+##      lower bound upper bound
+## [1,]    21.70625    23.35347
+\end{verbatim}
+\begin{alltt}
+\hlcom{# t.test}
+\hlkwd{t.test}\hlstd{(Boston}\hlopt{$}\hlstd{medv)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	One Sample t-test
+## 
+## data:  Boston$medv
+## t = 55.111, df = 505, p-value < 2.2e-16
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  21.72953 23.33608
+## sample estimates:
+## mean of x 
+##  22.53281
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The 95\% confidence interval for $\mu$ under bootstrap method is (21.71768, 23.35014), and that under t-test is (21.72953, 23.33608). Two intervals are very similar.
+    % e.
+      \item Now, estimate M, the population median of \texttt{medv} with the sample median $\hat{M}$.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{m.hat} \hlkwb{<-} \hlkwd{median}\hlstd{(Boston}\hlopt{$}\hlstd{medv)}
+\hlstd{m.hat}
+\end{alltt}
+\begin{verbatim}
+## [1] 21.2
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The sample median: $\hat{M}$ = 21.2
+    % f.
+      \item We now would like to estimate the standard error of $\hat{M}$, but unfortunately, there is no simple formula for computing the standard error of a sample median. Instead, estimate this standard error using the bootstrap.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{m} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{,}\hlkwc{sample}\hlstd{)\{}\hlkwd{return}\hlstd{(} \hlkwd{median}\hlstd{(x[sample]) )\}}
+\hlkwd{boot}\hlstd{(Boston}\hlopt{$}\hlstd{medv, m,} \hlkwc{R} \hlstd{=} \hlnum{10000}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## ORDINARY NONPARAMETRIC BOOTSTRAP
+## 
+## 
+## Call:
+## boot(data = Boston$medv, statistic = m, R = 10000)
+## 
+## 
+## Bootstrap Statistics :
+##     original   bias    std. error
+## t1*     21.2 -0.01053   0.3747355
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The estimated standard error $\hat{Std}(\hat{M}_{boot}) = 0.3761129$
+
+    \end{enumerate}
+  \end{problem}
+\end{document}

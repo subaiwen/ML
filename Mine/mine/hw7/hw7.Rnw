@@ -1,0 +1,338 @@
+\documentclass[12pt]{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{\alph{enumi}.} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+<<include=FALSE>>=
+# Set global chunk options
+opts_chunk$set(echo = T,
+               warning = F,
+               message = F,
+               cache = T)
+invisible(lapply(c("knitr","kableExtra","tidyverse","ISLR"),library, character.only=TRUE))
+source("/Users/liubeixi/Desktop/ML/HW/mine/hw7/hw7.R")
+@
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework \#7}
+\begin{enumerate}[1.]
+% 1.
+  \item \textbf{(Page 125, chap. 3, \#14)}. This problem focuses on \textbf{\textcolor{blue}{multicollinearity}}.
+    \begin{enumerate}[(a)]
+    % (a)
+      \item Perform the following commands in R:\\[-20pt]
+        \begin{verbatim}
+        > set.seed (1)
+        > x1 = runif (100)
+        > x2 = 0.5*x1 + rnorm(100)/10
+        > y = 2 + 2*x1 + 0.3*x2 + rnorm(100)
+        \end{verbatim}
+        \vspace*{-20pt}
+        The last line corresponds to creating a linear model in which $y$ is a function of $x_1$ and $x_2$. Write out the form of the linear model. What are the regression coefficients?\\[10pt]
+        Form of the model:
+        $$Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \varepsilon$$
+        $\beta_1 = 2$ and $\beta_2 = 0.3$ are the regression coefficients.
+
+    % (b)
+      \item What is the correlation between $x_1$ and $x_2$? Create a scatterplot displaying the relationship between the variables.
+<<1.b, out.width="0.7\\linewidth">>=
+cor(x1,x2)
+plot(x1,x2)
+@
+
+    % (c)
+      \item Using this data, fit a least squares regression to predict y using $x_1$ and $x_2$. Describe the results obtained. What are $\hat{\beta}_0$, $\hat{\beta}_1$, and $\hat{\beta}_2$? What are the true $\beta_0$, $\beta_1$, and $\beta_2$? Can you reject the null hypothesis $H_0 : \beta_1 = 0$? How about the null hypothesis $H_0 : \beta_2 = 0$?
+<<1.c>>=
+reg <- lm(y ~ x1 + x2)
+summary(reg)
+@
+      The estimation $\hat{\beta}_0 = 2.1305$, $\hat{\beta}_1 = 1.4396$, and $\hat{\beta}_2 = 1.0097$. And the true $\beta_0 = 2$, $\beta_1 = 2$, and $\beta_2 = 0.3$. Under the significance level of 0.05, I can reject the null hypothesis $H_0 : \beta_1 = 0$ but I cannot reject the null hypothesis $H_0 : \beta_2 = 0$.
+
+    % (d)
+      \item Now fit a least squares regression to predict $y$ using only $x_1$. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_1 = 0$?
+<<1.d>>=
+reg.x1 <- lm(y ~ x1)
+summary(reg.x1)
+@
+      I can reject the null hypothesis $H_0 : \beta_1 = 0$.
+
+    % (e)
+      \item Now fit a least squares regression to predict $y$ using only $x_2$. Comment on your results. Can you reject the null hypothesis $H_0 : \beta_2  = 0$?
+<<1.e>>=
+reg.x2 <- lm(y ~ x2)
+summary(reg.x2)
+@
+      I can reject the null hypothesis $H_0 : \beta_2 = 0$.
+
+    % (f)
+      \item Do the results obtained in (c)–(e) contradict each other? Explain your answer.\\[10pt]
+      No, given $x_1$ and $x_2$ collinear, including both of them in the model will reduce the power of t-test. Also they will diminish the explanatory effect of each other. So it makes sense to have the predictor significant in the model including only one of them, while at least one of them is not signficant in the model including both of them.
+
+    % (g)
+      \item Now suppose we obtain one additional observation, which was unfortunately mismeasured. Use the following R code.\\[-20pt]
+        \begin{verbatim}
+        > x1=c(x1, 0.1)
+        > x2=c(x2, 0.8)
+        > y=c(y,6)
+        \end{verbatim}
+        \vspace*{-20pt}
+        Re-fit the linear models from (c) to (e) using this new data. What effect does this new observation have on the each of the models? In each model, is this observation an outlier? A high-leverage point? Both? Explain your answers. How do the slopes from all the considered models react on the newly added data point?
+<<1.g>>=
+x1=c(x1, 0.1)
+x2=c(x2, 0.8)
+y=c(y,6)
+reg <- lm(y ~ x1 + x2)
+reg.x1 <- lm(y ~ x1)
+reg.x2 <- lm(y ~ x2)
+summary(reg)
+summary(reg.x1)
+summary(reg.x2)
+# plot
+par(mfrow = c(2,2))
+plot(x1,x2)
+points(x = 0.1, y = 0.8, col = 2)
+plot(x1,y)
+points(x = 0.1, y = 6, col = 2)
+plot(x2,y)
+points(x = 0.8, y = 6, col = 2)
+# outlier
+par(mfrow = c(1,3))
+t.reg <- rstudent(reg)
+t1.reg <- rstudent(reg.x1)
+t2.reg <- rstudent(reg.x2)
+plot(t.reg); plot(t1.reg); plot(t2.reg)
+# influential
+par(mfrow = c(1,3))
+plot(influence(reg)$hat)
+plot(influence(reg.x1)$hat)
+plot(influence(reg.x2)$hat)
+@
+    It is not an outlier or high-leverage point in model (d) and (e). But it is both an outlier and influential case in model (c) and (d). The estimated slope of model (d) and (e) does not change much, but the estimated slopes of model (c) change very much.
+
+    % (h)
+      \item What are standard errors of estimated regression slopes in (a), (d), and (e)? Which models produce more stable and therefore, more reliable estimates?\\
+      \begin{center}
+      \begin{tabular}{|c|c|c|}
+        \hline\\
+        model & $Var(\beta_1)$ & $Var(\beta_2)$\\
+        \hline\\
+        (c) & 0.7212 & 1.1337\\
+        (d) & 0.3963 & \\
+        (e) & & 0.6330 \\
+        \hline
+      \end{tabular}
+      \end{center}
+      Model (d) and (e) produce more stable estimates than model (c).
+    % (i)
+      \item Compute both VIF in question (a) and relate them to your answer to question (h).
+<<1.i>>=
+car::vif(reg)
+@
+      The collinearity betwenn $x_1$ and $x_2$ cause the inflation of variance in model (c), so we have vif of $x_1$ and $x_2$ 1.76 greater than 1. Removing any of them can reduce the variance of model (c). Thus model (d) and (e) have smaller variance than (c).
+    \end{enumerate}
+
+% 2.
+  \item \textbf{(Chap. 6, \# 2, p.259)} Consider three methods of fitting a linear regression model - (a) lasso, (b) ridge regression, and (c) fitting nonlinear trends. For each method, choose the right answer, comparing it with the least squares regression:
+    \begin{enumerate}[i.]
+    % i.
+      \item The method is more flexible and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance.
+    % ii.
+      \item The method is more flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias.
+    % iii.
+      \item The method is less flexible and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance.
+    % iv
+      \item The method is less flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias.
+    \end{enumerate}
+    \begin{enumerate}[(a)]
+      \item iii.
+      \item iii.
+      \item ii.
+    \end{enumerate}
+
+% 3.
+  \item \textbf{(Chap. 6, $\approx$\# 6, p.261)} Ridge regression minimizes
+    \begin{equation}
+      \sum^{n}_{i=1}(Y_i-\beta_0-X_{i1}\beta_1-\cdots-X_{ip}\beta_p)^2 + \lambda \sum^{p}_{j=1}\beta_j^2
+    \end{equation}
+    whereas lasso minimizes\\
+    \begin{equation}
+      \sum^{n}_{i=1}(Y_i-\beta_0-X_{i1}\beta_1-\cdots-X_{ip}\beta_p)^2 + \lambda \sum^{p}_{j=1}|\beta_j|\\
+    \end{equation}
+    Consider a "toy" example, where $n = p = 1$, $X = 1$, and the intercept is omitted from the model. Then $RSS$ reduces to $RSS = (Y - \beta)^2$.
+    \begin{enumerate}[(a)]
+    % (a)
+      \item Choose some $Y$ and $\lambda$, plot (1) and (2) as functions of $\beta$, and find their minima on these graphs. Verify that these minima are attained at
+      \begin{equation}
+        \hspace*{-50pt}\hat{\beta}_{ridge} = \frac{Y}{1+\lambda}\quad \text{and}\quad \hat{\beta}_{lasso} =\begin{cases}
+          Y - \lambda/2 &\text{if} \quad Y > \lambda/2\\
+          Y + \lambda/2 &\text{if} \quad Y < -\lambda/2\\
+          0 &\text{if} \quad |Y| < \lambda/2
+        \end{cases}
+      \end{equation}
+<<3.a>>=
+X <- 1
+par(mfrow = c(2,2))
+Y <- 3
+lambda <- 1
+curve((Y - beta)^2 + lambda*beta^2, -5, 5, col =1, xname = "beta", xlab="beta", main="Y=3, lambda=1") # ridge
+curve((Y - beta)^2 + lambda*abs(beta), -5, 5, col =2, xname = "beta", xlab="beta", add = TRUE) # lasso
+Y <- 3
+lambda <- 3
+curve((Y - beta)^2 + lambda*beta^2, -5, 5, col =1,xname = "beta", xlab="beta", main="Y=3, lambda=3") # ridge
+curve((Y - beta)^2 + lambda*abs(beta), -5, 5, col =2, xname = "beta", xlab="beta", add = TRUE) # lasso
+Y <- 1
+lambda <- 3
+curve((Y - beta)^2 + lambda*beta^2, -5, 5, col =1,xname = "beta", xlab="beta", main="Y=1, lambda=3") # ridge
+curve((Y - beta)^2 + lambda*abs(beta), -5, 5, col =2, xname = "beta", xlab="beta", main="lasso", add = TRUE) # lasso
+Y <- 2
+lambda <- 2
+curve((Y - beta)^2 + lambda*beta^2, -5, 5, col =1, xname = "beta", xlab="beta", main="Y=2, lambda=2") # ridge
+curve((Y - beta)^2 + lambda*abs(beta), -5, 5, col =2, xname = "beta", xlab="beta", main="lasso", add = TRUE) # lasso
+@
+
+
+    % (b)
+      \item Now choose some value of $Y$ and plot ridge regression and lasso solutions (3) on the same axes, as functions of $\lambda$. Observe how ridge regression keeps a slope whereas lasso sends the slope to 0 when the penalty term is high.
+<<3.b>>=
+ridge.beta <- function(l){return( Y/(1+l) )}
+lasso.beta <- function(l){ return( (Y-l/2)*(Y > l/2) + (Y+l/2)*(Y < -l/2)) + 0*(abs(Y) < l/2)}
+# plot
+par(mfrow = c(1,2))
+Y <- 1
+curve( ridge.beta, 0, 20, col=1, lwd=3, ylim = c(-0.001,1), xlab="lambda", main="Y=1" )
+curve( lasso.beta, 0, 20, col=2, lwd=3, add=TRUE)
+Y <- 3
+curve( ridge.beta, 0, 20, col=1, lwd=3, ylim = c(-0.001,1), xlab="lambda", main="Y=3" )
+curve( lasso.beta, 0, 20, col=2, lwd=3, add=TRUE)
+dev.off()
+@
+
+    \end{enumerate}
+% 4.
+  \item \textbf{(Simulation project - Chap. 6, \# 8, p.262)}\\
+  In this exercise, we will generate simulated data, and will then use this data to perform
+best subset selection.
+    \begin{enumerate}[(a)]
+    % (a)
+      \item Use the \texttt{rnorm()} function to generate a predictor $X$ and a noise vector $\varepsilon$ of length
+$n = 100$ (you can refer to our lab "First steps in R" for this command).
+<<4.a>>=
+set.seed(666)
+x <- rnorm(100)
+epsi <- rnorm(100)
+@
+
+    % (b)
+      \item Generate a response vector Y according to the model
+      $$Y=\beta_0 + \beta_1X + \beta_2X^2 + \beta_3X^3 + \varepsilon$$
+      where $\beta_0$, $\beta_1$, $\beta_2$, and $\beta_3$ are constants of your choice.
+<<4.b>>=
+b.0 <- b.1 <- b.2 <- b.3 <- 2
+y <- b.0 + b.1*x + b.2^2*x + b.3^3*x + epsi
+@
+
+    % (c)
+      \item Use stepwise selection with \texttt{step} for variable selection. How does your answer compare to the results in (c)?
+<<3.c>>=
+df <- data.frame(x,y)
+null <- lm(y~1, data =df)
+full <- lm(y ~ x + I(x^2)+ I(x^3) + I(x^4)+ I(x^5)+
+             I(x^6)+ I(x^7)+ I(x^8)+ I(x^9)+ I(x^10), data = df)
+step( null,scope=list(lower=null, upper=full), direction="forward")
+@
+      The second order term $x^2$ is removed from the model. But we keep $x_2$ as long as we want to keep the higher order term $x_3$.
+    % (d)
+      \item Now fit a lasso model with the same predictors. Use cross-validation to select the optimal value of $\lambda$. Create plots of the cross-validation error as a function of $\lambda$. Report the resulting coefficient estimates, and discuss the results obtained. Which predictors got eliminated by lasso?
+<<4.d,out.width="0.7\\linewidth">>=
+x.mat <- model.matrix(full)
+lasso <- glmnet::cv.glmnet(x.mat,y,alpha = 1, lambda = seq(0,10,0.01))
+lasso$lambda.min
+plot(lasso)
+predict( lasso, lasso$lambda.min, type="coefficients")
+@
+      The best $\lambda$ derived from cross validation is 0, so no predictors got eliminated by lasso.
+    % (e)
+      \item Now generate a response vector Y according to the model
+      $$Y=\beta_0 + \beta_7X^7 +\varepsilon$$
+      and perform best subset selection and the lasso. Discuss the results.
+<<4.e, out.length="0.7\\linewidth">>=
+b.7 <- 2
+y <- b.0 + b.7^7*x + epsi
+bestsub <- leaps::regsubsets(y ~ x + I(x^2)+ I(x^3) + I(x^4)+ I(x^5)+ I(x^6)
+                             + I(x^7)+ I(x^8)+ I(x^9)+ I(x^10), data = df)
+par(mfrow = c(1,3))
+plot(summary(bestsub)$adjr2, main = "adjr2")
+lines(summary(bestsub)$adjr2)
+plot(summary(bestsub)$cp, main = "cp")
+lines(summary(bestsub)$cp)
+plot(summary(bestsub)$bic, main = "bic")
+lines(summary(bestsub)$bic)
+which.max(summary(bestsub)$adjr2)
+which.min(summary(bestsub)$cp)
+which.min(summary(bestsub)$bic)
+summary(lm(y ~ x + I(x^2)+ I(x^3) + I(x^4)+ I(x^5)+ I(x^6),data =df))
+summary(lm(y ~ x + I(x^2),data =df))
+# y ~ x^2
+reg <- lm(y ~ x + I(x^2),data =df)
+x.mat <- model.matrix(reg)
+lasso <- glmnet::cv.glmnet(x.mat,y,alpha = 1, lambda = seq(0,10,0.01))
+predict( lasso, lasso$lambda.min, type="coefficients")
+@
+      The best subset selection algorithm yields the model $Y = \beta_0 + \beta_1X_1 + \beta_2X_2^2 + \varepsilon$. The cross validation for lasso suggests no to drop any estimator of the best subset model.
+    \end{enumerate}
+  \end{enumerate}
+\end{document}
+
+

@@ -1,0 +1,424 @@
+\documentclass[12pt,fleqn]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathtools,amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{(\alph{enumi})} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework \#5 Resampling Methods}
+	\begin{enumerate}[1.]
+% 1.
+	\item \textbf{(Jackknife)} An acoustic studio needs to estimate the range of voice frequencies that an adult singer can produce. A sample of n = 10 recordings contains frequencies 102, 115, 127, 127, 162, 180, 184, 205, 239, 240.
+    \begin{enumerate}[(a)]
+		% (a)
+  			\item  Compute the jackknife estimator of the population highest frequency of a human voice.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{freq} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{102}\hlstd{,} \hlnum{115}\hlstd{,} \hlnum{127}\hlstd{,} \hlnum{127}\hlstd{,} \hlnum{162}\hlstd{,} \hlnum{180}\hlstd{,} \hlnum{184}\hlstd{,} \hlnum{205}\hlstd{,} \hlnum{239}\hlstd{,} \hlnum{240}\hlstd{)}
+\hlstd{theta.hat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(}\hlkwd{max}\hlstd{(x))\}} \hlcom{# original estimator}
+\hlstd{jn} \hlkwb{<-} \hlkwd{jackknife}\hlstd{( freq, theta.hat )}
+\hlkwd{theta.hat}\hlstd{(freq)} \hlopt{-} \hlstd{jn}\hlopt{$}\hlstd{jack.bias}
+\end{alltt}
+\begin{verbatim}
+## [1] 240.9
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+        \vspace{-0.8cm}
+  			\begin{align*}
+  			  &\hat{\theta} = max\{102, 115, 127, 127, 162, 180, 184, 205, 239, 240\} = 240\\
+  			  &\hat{\theta}_{(-i)} = \underbrace{240, 240, \cdots, 240,}_{\times 9} 239 \hspace{2cm}i = 1,2,\cdots,10\\
+  			  &\hat{\theta}_{(\bullet)} = \frac{1}{n}\sum_{i=1}^{10}\hat{\theta}_{(-i)} = 239.9\\
+  			  &\hat{\theta}_{JK} = n\hat{\theta} - (n-1)\hat{\theta}_{(\bullet)}\\
+  			  &\hspace{0.7cm}     = 10\times 240 - (10-1)\times 239.9\\
+  			  &\hspace{0.7cm}     = 240.9
+  			\end{align*}
+
+  	% (b)
+			  \item Compute the jackknife estimator of the population lowest frequency of a human voice.
+			   \vspace{-0.4cm}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{freq} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{102}\hlstd{,} \hlnum{115}\hlstd{,} \hlnum{127}\hlstd{,} \hlnum{127}\hlstd{,} \hlnum{162}\hlstd{,} \hlnum{180}\hlstd{,} \hlnum{184}\hlstd{,} \hlnum{205}\hlstd{,} \hlnum{239}\hlstd{,} \hlnum{240}\hlstd{)}
+\hlstd{theta.hat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(}\hlkwd{min}\hlstd{(x))\}} \hlcom{# original estimator}
+\hlstd{jn} \hlkwb{<-} \hlkwd{jackknife}\hlstd{( freq, theta.hat )}
+\hlkwd{theta.hat}\hlstd{(freq)} \hlopt{-} \hlstd{jn}\hlopt{$}\hlstd{jack.bias}
+\end{alltt}
+\begin{verbatim}
+## [1] 90.3
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+        \vspace{-0.8cm}
+  			\begin{align*}
+  			  &\hat{\theta} = min\{102, 115, 127, 127, 162, 180, 184, 205, 239, 240\} = 102\\
+  			  &\hat{\theta}_{(-i)} = 115,\underbrace{102, \cdots, 102}_{\times 9} \hspace{2cm}i = 1,2,\cdots,10\\
+  			  &\hat{\theta}_{(\bullet)} = \frac{1}{n}\sum_{i=1}^{10}\hat{\theta}_{(-i)} = 103.3\\
+  			  &\hat{\theta}_{JK} = n\hat{\theta} - (n-1)\hat{\theta}_{(\bullet)}\\
+  			  &\hspace{0.7cm}     = 10\times 102 - (10-1)\times 103.3\\
+  			  &\hspace{0.7cm}     = 90.3
+  			\end{align*}
+  			Natural range of human voice frequencies: (85, 255). The Jackknife estimation is very close to the fact.
+		% (c)
+			  \item Generalize the results. Assume a sample $X_1, \cdots, X_n$ of size n, where $X_1$, $X_2$ are the smallest two observations, and $X_{n-1}$, $X_n$ are the largest two. Derive equations for the jackknife estimators of the population minimum and maximum.
+            \begin{enumerate}[i.]
+              \item Population maximum\\
+              \vspace{-0.8cm}
+  			        \begin{align*}
+  			          &\hat{\theta} = max\{X_1, X_2, \cdots, X_{n-1}, X_n\} = X_n\\
+  			          &\hat{\theta}_{(-i)} = \underbrace{X_n, \cdots, X_n}_{\times (n-1)},X_{n-1} \hspace{2cm}i = 1,2,\cdots,n\\
+  			          &\hat{\theta}_{(\bullet)} = \frac{1}{n}\sum_{i=1}^{n}\hat{\theta}_{(-i)} = \frac{(n-1)X_n+X_{n-1}}{n}\\
+  			          &\hat{\theta}_{JK} = n\hat{\theta} - (n-1)\hat{\theta}_{(\bullet)}\\
+  			          &\hspace{0.7cm}    = n X_n - (n-1)\frac{(n-1)X_n+X_{n-1}}{n}\\
+  			          &\hspace{0.7cm}    = \frac{(2n-1)X_n-(n-1)X_{n-1}}{n}\\
+  			          &\hat{Bias} = \hat{\theta} - \hat{\theta}_{JK}\\
+  			          &\hspace{0.9cm}  = \frac{(X_{n-1}-X_{n})(n-1)}{n}
+  			        \end{align*}
+              Appling this Jackknife estimator to the tank example, we obtain an estimation of 103.2, which is not so accurate as the estimation, 109.2, proposed by the statisticians.\\
+  			      \item Population minimum\\
+              \vspace{-0.8cm}
+  			        \begin{align*}
+  			          &\hat{\theta} = min\{X_1, X_2, \cdots, X_{n-1}, X_n\} = X_1\\
+  			          &\hat{\theta}_{(-i)} = X_{2},\underbrace{X_1, \cdots, X_1}_{\times (n-1)} \hspace{2cm}i = 1,2,\cdots,n\\
+  			          &\hat{\theta}_{(\bullet)} = \frac{1}{n}\sum_{i=1}^{n}\hat{\theta}_{(-i)} = \frac{(n-1)X_1+X_{2}}{n}\\
+  			          &\hat{\theta}_{JK} = n\hat{\theta} - (n-1)\hat{\theta}_{(\bullet)}\\
+  			          &\hspace{0.7cm}    = n X_1 - (n-1)\frac{(n-1)X_1+X_{2}}{n}\\
+  			          &\hspace{0.7cm}    = \frac{(2n-1)X_1-(n-1)X_{2}}{n}\\
+  			          &\hat{Bias} = \hat{\theta} - \hat{\theta}_{JK}\\
+  			          &\hspace{0.9cm}  = \frac{(X_{2}-X_{1})(n-1)}{n}
+  			        \end{align*}
+            \end{enumerate}
+		\end{enumerate}
+
+% 2.
+  \item \textbf{(Jackknife)} One needs to estimate $\theta$, the frequency of days with 0 traffic accidents on a certain highway. The data are collected. During 40 days, there are 26 days with 0 accidents, 10 days with 1 accident, and 4 days with 2 accidents.\\
+  Statistician A estimates $\theta$ with a sample proportion $\hat{p} = 26/40 = 0.65$.\\
+  Statistician B argues that this method does not distinguish between the days with 1 accident and the days with 2 accidents, losing some valuable information. She suggests to model the number of accidents X by a Poisson distribution with parameter $\lambda$. Then we have $\theta = \boldmath{P}\{X = 0\} = exp(-\lambda)$. She estimates $\lambda$ with $\hat{\lambda} = \bar{X}$. Then $\hat{\theta} = exp(-\hat{\lambda})$. However, this estimator is biased.
+    \begin{enumerate}[(a)]
+    % (a)
+      \item Use jackknife to estimate the bias of $\hat{\theta}$.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{accident} \hlkwb{<-} \hlkwd{sample}\hlstd{(} \hlkwd{c}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{26}\hlstd{),}\hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{10}\hlstd{),}\hlkwd{rep}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{4}\hlstd{)) )}
+\hlstd{theta.hat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(} \hlkwd{exp}\hlstd{(} \hlopt{-} \hlkwd{mean}\hlstd{(x) ) )\}} \hlcom{# original estimator}
+\hlstd{jn} \hlkwb{<-} \hlkwd{jackknife}\hlstd{( accident, theta.hat )}
+\hlstd{jn}\hlopt{$}\hlstd{jack.bias} \hlcom{# estimated bias}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.003683256
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The estimated bias of $\hat{\theta}$ is 0.003683256.
+    % (b)
+      \item Compute the jackknife estimator $\hat{\theta_{JK}}$ based on $\theta$.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{theta.hat}\hlstd{(accident)} \hlopt{-} \hlstd{jn}\hlopt{$}\hlstd{jack.bias} \hlcom{# jackknife estimator of theta}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.6376282
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      $\hat{\theta_{JK}} = 0.6339449$.
+    % (c)
+      \item Apply the jackknife method to estimate the bias of $\hat{p}$ and compute the jackknife estimator $\hat{p_{JK}}$. Explain the result.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{p.hat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}\hlkwd{return}\hlstd{(} \hlkwd{mean}\hlstd{(x} \hlopt{==} \hlnum{0}\hlstd{) )\}} \hlcom{# original estimator}
+\hlstd{jn} \hlkwb{<-} \hlkwd{jackknife}\hlstd{( accident, p.hat )}
+\hlstd{jn}\hlopt{$}\hlstd{jack.bias} \hlcom{# estimated bias}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlkwd{p.hat}\hlstd{(accident)} \hlopt{-} \hlstd{jn}\hlopt{$}\hlstd{jack.bias} \hlcom{# jackknife estimator of p}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.65
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      The estimated bias of $\hat{p}$ is 0. And the jackknife estimator $\hat{p_{JK}} = 0.65$. That means $\hat{p}$ is an unbiased estimator, so Jackknife cannot improve more.
+    % (d)
+      \item Now, let us estimate the standard deviation of $\hat{p}$. The standard formula is
+      $$s_{\hat{p}} = \hat{Std}(\hat{p}) = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} $$
+      Use jackknife to estimate the bias of $s_{\hat{p}}$. Propose an estimator with a smaller bias and calculate it from the given data. (Knowledge of Poisson distribution is not needed to solve this problem.)
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{sp.hat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{} \hlcom{# original estimator}
+  \hlstd{n} \hlkwb{<-} \hlkwd{length}\hlstd{(x)}
+  \hlstd{p} \hlkwb{<-} \hlkwd{mean}\hlstd{(x} \hlopt{==} \hlnum{0}\hlstd{)}
+  \hlstd{sp} \hlkwb{<-} \hlkwd{sqrt}\hlstd{(p}\hlopt{*}\hlstd{(}\hlnum{1}\hlopt{-}\hlstd{p)}\hlopt{/}\hlstd{n)}
+  \hlkwd{return}\hlstd{(sp)}
+  \hlstd{\}}
+\hlstd{jn} \hlkwb{<-} \hlkwd{jackknife}\hlstd{( accident, sp.hat )}
+\hlstd{jn}\hlopt{$}\hlstd{jack.bias} \hlcom{# estimated bias}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.03638723
+\end{verbatim}
+\begin{alltt}
+\hlkwd{sp.hat}\hlstd{(accident)} \hlopt{-} \hlstd{jn}\hlopt{$}\hlstd{jack.bias}\hlcom{# JK estimator}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.03902828
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+     The estimated bias of $s_{\hat{p}}= 0.03638723$ under Jackknife procedure. An estimator with smaller bias:
+     $$\hat{Std}(\hat{p})_{JK} = 0.03902828$$.
+    \end{enumerate}
+  % 3.
+  \item \textbf{(Cross-Validation. Pages 198-199, chap. 5, $\approx$\#5)}\\
+      Logistic regression is used to predict the probability of default using \texttt{income}, \texttt{balance}, and \texttt{student} on the \texttt{Default} data set in R package \texttt{ISLR}. Using
+      \begin{enumerate}[(a)]
+        \item the validation set approach,
+        \item leave-one-out cross-validation, and
+        \item K-fold cross-validation for $K = 100$ and $K = 1000$,
+        \end{enumerate}
+      estimate the test error of this logistic regression model and decide whether it will be improved when the dummy variable \texttt{student} is excluded from this prediction.
+
+      \begin{enumerate}[(a)]
+      % (a)
+        \item the validation set approach
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{set.seed}\hlstd{(}\hlnum{666}\hlstd{)}
+\hlstd{n} \hlkwb{<-} \hlkwd{nrow}\hlstd{(Default)}
+\hlstd{train} \hlkwb{=} \hlkwd{sample}\hlstd{( n, n}\hlopt{/}\hlnum{2} \hlstd{)}
+\hlstd{reg} \hlkwb{=} \hlkwd{glm}\hlstd{( default} \hlopt{~} \hlstd{income} \hlopt{+} \hlstd{balance} \hlopt{+} \hlstd{student,}
+           \hlkwc{family}\hlstd{=}\hlstr{"binomial"}\hlstd{,} \hlkwc{data}\hlstd{=Default[train,] )}
+\hlstd{y.hat} \hlkwb{=} \hlkwd{predict}\hlstd{( reg, Default,} \hlkwc{type}\hlstd{=}\hlstr{"response"} \hlstd{)}
+\hlstd{pred} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(y.hat} \hlopt{>} \hlnum{0.5}\hlstd{,} \hlstr{"Yes"}\hlstd{,} \hlstr{"No"}\hlstd{)}
+\hlstd{a.1} \hlkwb{<-} \hlkwd{mean}\hlstd{( Default}\hlopt{$}\hlstd{default[}\hlopt{-}\hlstd{train]} \hlopt{!=} \hlstd{pred[}\hlopt{-}\hlstd{train] )}
+\hlcom{# remove student}
+\hlstd{reg} \hlkwb{=} \hlkwd{glm}\hlstd{( default} \hlopt{~} \hlstd{income} \hlopt{+} \hlstd{balance,}
+           \hlkwc{family}\hlstd{=}\hlstr{"binomial"}\hlstd{,} \hlkwc{data}\hlstd{=Default[train,] )}
+\hlstd{y.hat} \hlkwb{=} \hlkwd{predict}\hlstd{( reg, Default,} \hlkwc{type}\hlstd{=}\hlstr{"response"} \hlstd{)}
+\hlstd{pred} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(y.hat} \hlopt{>} \hlnum{0.5}\hlstd{,} \hlstr{"Yes"}\hlstd{,} \hlstr{"No"}\hlstd{)}
+\hlstd{a.2} \hlkwb{<-} \hlkwd{mean}\hlstd{( Default}\hlopt{$}\hlstd{default[}\hlopt{-}\hlstd{train]} \hlopt{!=} \hlstd{pred[}\hlopt{-}\hlstd{train] )}
+\hlcom{# output}
+\hlkwd{data.frame}\hlstd{(}\hlstr{'test error rate'} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{'include student'} \hlstd{= a.1,} \hlstr{'remove student'} \hlstd{= a.2))}
+\end{alltt}
+\begin{verbatim}
+##                 test.error.rate
+## include student          0.0244
+## remove student           0.0240
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      After removing the student variable, the test error of the validation set approach slight decreases from 0.0244 to 0.0240. The model does not significantly improve.
+      % (b)
+        \item leave-one-out cross-validation
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+pred.loocv <- \hlkwd{rep}(NA, n)
+\hlkwd{for} (i in 1:n)\{
+  reg <- \hlkwd{glm}( default ~ income + balance + student,
+             family=\hlstr{"binomial"}, data=Default[-i,] )
+  y.hat <- \hlkwd{predict}( reg, Default, type=\hlstr{"response"} )[i]
+  pred.loocv[i] <- \hlkwd{ifelse}(y.hat > 0.5, \hlstr{"Yes"}, \hlstr{"No"})
+  \}
+b.1 <- \hlkwd{mean}( Default$default != pred.loocv )
+\hlcom{# remove student}
+\hlkwd{for} (i in 1:n)\{
+  reg <- \hlkwd{glm}( default ~ income + balance,
+             family=\hlstr{"binomial"}, data=Default[-i,] )
+  y.hat <- \hlkwd{predict}( reg, Default, type=\hlstr{"response"} )[i]
+  pred.loocv[i] <- \hlkwd{ifelse}(y.hat > 0.5, \hlstr{"Yes"}, \hlstr{"No"})
+  \}
+b.2 <- \hlkwd{mean}( Default$default != pred.loocv )
+\hlcom{# output}
+\hlkwd{data.frame}(\hlstr{'test error rate'} = \hlkwd{c}(\hlstr{'include student'} = b.1, \hlstr{'remove student'} = b.2)
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##                 test.error.rate
+## include student          0.0268
+## remove student           0.0263
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      Under LOOCV procedure, removing the student variable would cause the test error to slight decrease from 0.0268 to 0.0263. The model does not improve much.
+
+      % (c)
+        \item K-fold cross-validation for $K = 100$ and $K = 1000$
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# K = 100}
+\hlstd{k} \hlkwb{<-} \hlnum{100}
+\hlstd{pred.k.100} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, n)}
+\hlstd{k.group} \hlkwb{<-} \hlkwd{split}\hlstd{(}\hlnum{1}\hlopt{:}\hlstd{n,} \hlkwd{sample}\hlstd{(}\hlnum{1}\hlopt{:}\hlstd{n, k))}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{k)\{}
+  \hlstd{reg} \hlkwb{=} \hlkwd{glm}\hlstd{( default} \hlopt{~} \hlstd{income} \hlopt{+} \hlstd{balance} \hlopt{+} \hlstd{student,}
+             \hlkwc{family}\hlstd{=}\hlstr{"binomial"}\hlstd{,} \hlkwc{data}\hlstd{=Default[}\hlopt{-}\hlstd{k.group[[i]],] )}
+  \hlstd{y.hat} \hlkwb{=} \hlkwd{predict}\hlstd{( reg, Default,} \hlkwc{type}\hlstd{=}\hlstr{"response"} \hlstd{)[k.group[[i]]]}
+  \hlstd{pred.k.100[k.group[[i]]]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(y.hat} \hlopt{>} \hlnum{0.5}\hlstd{,} \hlstr{"Yes"}\hlstd{,} \hlstr{"No"}\hlstd{)}
+  \hlstd{\}}
+\hlstd{c1.1} \hlkwb{=} \hlkwd{mean}\hlstd{( Default}\hlopt{$}\hlstd{default} \hlopt{!=} \hlstd{pred.k.100 )}
+\hlcom{# remove student}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{k)\{}
+  \hlstd{reg} \hlkwb{=} \hlkwd{glm}\hlstd{( default} \hlopt{~} \hlstd{income} \hlopt{+} \hlstd{balance,}
+             \hlkwc{family}\hlstd{=}\hlstr{"binomial"}\hlstd{,} \hlkwc{data}\hlstd{=Default[}\hlopt{-}\hlstd{k.group[[i]],] )}
+  \hlstd{y.hat} \hlkwb{=} \hlkwd{predict}\hlstd{( reg, Default,} \hlkwc{type}\hlstd{=}\hlstr{"response"} \hlstd{)[k.group[[i]]]}
+  \hlstd{pred.k.100[k.group[[i]]]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(y.hat} \hlopt{>} \hlnum{0.5}\hlstd{,} \hlstr{"Yes"}\hlstd{,} \hlstr{"No"}\hlstd{)}
+  \hlstd{\}}
+\hlstd{c1.2} \hlkwb{=} \hlkwd{mean}\hlstd{( Default}\hlopt{$}\hlstd{default} \hlopt{!=} \hlstd{pred.k.100 )}
+\hlcom{# k =1000}
+\hlstd{k} \hlkwb{<-} \hlnum{1000}
+\hlstd{pred.k.1000} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{NA}\hlstd{, n)}
+\hlstd{k.group} \hlkwb{<-} \hlkwd{split}\hlstd{(}\hlnum{1}\hlopt{:}\hlstd{n,} \hlkwd{sample}\hlstd{(}\hlnum{1}\hlopt{:}\hlstd{n, k))}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{k)\{}
+  \hlstd{reg} \hlkwb{=} \hlkwd{glm}\hlstd{( default} \hlopt{~} \hlstd{income} \hlopt{+} \hlstd{balance} \hlopt{+} \hlstd{student,}
+             \hlkwc{family}\hlstd{=}\hlstr{"binomial"}\hlstd{,} \hlkwc{data}\hlstd{=Default[}\hlopt{-}\hlstd{k.group[[i]],] )}
+  \hlstd{y.hat} \hlkwb{=} \hlkwd{predict}\hlstd{( reg, Default,} \hlkwc{type}\hlstd{=}\hlstr{"response"} \hlstd{)[k.group[[i]]]}
+  \hlstd{pred.k.1000[k.group[[i]]]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(y.hat} \hlopt{>} \hlnum{0.5}\hlstd{,} \hlstr{"Yes"}\hlstd{,} \hlstr{"No"}\hlstd{)}
+  \hlstd{\}}
+\hlstd{c2.1} \hlkwb{=} \hlkwd{mean}\hlstd{( Default}\hlopt{$}\hlstd{default} \hlopt{!=} \hlstd{pred.k.1000 )}
+\hlcom{# remove student}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{k)\{}
+  \hlstd{reg} \hlkwb{=} \hlkwd{glm}\hlstd{( default} \hlopt{~} \hlstd{income} \hlopt{+} \hlstd{balance,}
+             \hlkwc{family}\hlstd{=}\hlstr{"binomial"}\hlstd{,} \hlkwc{data}\hlstd{=Default[}\hlopt{-}\hlstd{k.group[[i]],] )}
+  \hlstd{y.hat} \hlkwb{=} \hlkwd{predict}\hlstd{( reg, Default,} \hlkwc{type}\hlstd{=}\hlstr{"response"} \hlstd{)[k.group[[i]]]}
+  \hlstd{pred.k.1000[k.group[[i]]]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(y.hat} \hlopt{>} \hlnum{0.5}\hlstd{,} \hlstr{"Yes"}\hlstd{,} \hlstr{"No"}\hlstd{)}
+  \hlstd{\}}
+\hlstd{c2.2} \hlkwb{=} \hlkwd{mean}\hlstd{( Default}\hlopt{$}\hlstd{default} \hlopt{!=} \hlstd{pred.k.1000 )}
+\hlcom{# output}
+\hlkwd{data.frame}\hlstd{(} \hlstr{'K'} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{100}\hlstd{,}\hlnum{100}\hlstd{,}\hlnum{1000}\hlstd{,}\hlnum{1000}\hlstd{),}
+            \hlstr{'student'} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{'include'}\hlstd{,}\hlstr{'remove'}\hlstd{,}\hlstr{'include'}\hlstd{,}\hlstr{'remove'}\hlstd{),}
+            \hlstr{'test error rate'} \hlstd{=} \hlkwd{c}\hlstd{(c1.1,c1.2,c2.1,c2.2))}
+\end{alltt}
+\begin{verbatim}
+##      K student test.error.rate
+## 1  100 include          0.0269
+## 2  100  remove          0.0263
+## 3 1000 include          0.0268
+## 4 1000  remove          0.0263
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      When we use K-fold method with $K = 100$, removing the student variable will help decrease the test error rate from 0.0269 to 0.0263. With $K = 1000$, the test error rate will decrease from 0.0268 to 0.0263 if we remove the student variable. The model does not obviously improve.
+     \end{enumerate}
+  \end{enumerate}
+\end{document}
+
+

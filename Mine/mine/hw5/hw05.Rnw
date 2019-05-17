@@ -1,0 +1,300 @@
+\documentclass[12pt,fleqn]{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.7}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathtools,amsmath,amsthm,amssymb,scrextend}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\DeclareMathOperator{\rng}{Rng}
+\DeclareMathOperator{\dom}{Dom}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cont}{\subseteq}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage[mathscr]{euscript}
+\let\euscr\mathscr \let\mathscr\relax% just so we can load this and rsfs
+\usepackage[scr]{rsfso}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+citecolor=blue, urlcolor=blue]{hyperref}
+
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\ddxp}[1]{\frac{d}{dx}\left( #1 \right)}
+\newcommand{\dydx}{\frac{dy}{dx}}
+\let\ds\displaystyle
+\newcommand{\intx}[1]{\int #1 \, dx}
+\newcommand{\intt}[1]{\int #1 \, dt}
+\newcommand{\defint}[3]{\int_{#1}^{#2} #3 \, dx}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\un}{\cup}
+\newcommand{\inter}{\cap}
+\newcommand{\ps}{\mathscr{P}}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+
+\usepackage{enumerate} % enable \begin{enumerate}[1.]
+\renewcommand{\labelenumi}{(\alph{enumi})} %first level: (a),(b)
+\renewcommand{\labelenumii}{\roman{enumii}.} %second level: i,ii
+
+\theoremstyle{definition}
+\newtheorem*{sol}{Solution}
+\newtheorem*{claim}{Claim}
+\newtheorem{problem}{}
+% ---------------------------------------------------------------------------------------------
+\begin{document}
+\lhead{Machine Learning}
+\chead{Zhijian Liu}
+\rhead{\today}
+
+<<include=FALSE>>=
+# Set global chunk options
+opts_chunk$set(echo = T,
+               warning = F,
+               message = F,
+               cache = T)
+invisible(lapply(c("knitr","kableExtra","tidyverse","ISLR","bootstrap","boot"),
+                 library, character.only=TRUE))
+@
+
+% Just put your proofs in between the \begin{proof} and the \end{proof} statements!
+
+\section*{Homework \#5 Resampling Methods}
+	\begin{enumerate}[1.]
+% 1.
+	\item \textbf{(Jackknife)} An acoustic studio needs to estimate the range of voice frequencies that an adult singer can produce. A sample of n = 10 recordings contains frequencies 102, 115, 127, 127, 162, 180, 184, 205, 239, 240.
+    \begin{enumerate}[(a)]
+		% (a)
+  			\item  Compute the jackknife estimator of the population highest frequency of a human voice.
+<<1.a>>=
+freq <- c(102, 115, 127, 127, 162, 180, 184, 205, 239, 240)
+theta.hat <- function(x){return(max(x))} # original estimator
+jn <- jackknife( freq, theta.hat )
+theta.hat(freq) - jn$jack.bias
+@
+        \vspace{-0.8cm}
+  			\begin{align*}
+  			  &\hat{\theta} = max\{102, 115, 127, 127, 162, 180, 184, 205, 239, 240\} = 240\\
+  			  &\hat{\theta}_{(-i)} = \underbrace{240, 240, \cdots, 240,}_{\times 9} 239 \hspace{2cm}i = 1,2,\cdots,10\\
+  			  &\hat{\theta}_{(\bullet)} = \frac{1}{n}\sum_{i=1}^{10}\hat{\theta}_{(-i)} = 239.9\\
+  			  &\hat{\theta}_{JK} = n\hat{\theta} - (n-1)\hat{\theta}_{(\bullet)}\\
+  			  &\hspace{0.7cm}     = 10\times 240 - (10-1)\times 239.9\\
+  			  &\hspace{0.7cm}     = 240.9
+  			\end{align*}
+
+  	% (b)
+			  \item Compute the jackknife estimator of the population lowest frequency of a human voice.
+			   \vspace{-0.4cm}
+<<1.b>>=
+freq <- c(102, 115, 127, 127, 162, 180, 184, 205, 239, 240)
+theta.hat <- function(x){return(min(x))} # original estimator
+jn <- jackknife( freq, theta.hat )
+theta.hat(freq) - jn$jack.bias
+@
+        \vspace{-0.8cm}
+  			\begin{align*}
+  			  &\hat{\theta} = min\{102, 115, 127, 127, 162, 180, 184, 205, 239, 240\} = 102\\
+  			  &\hat{\theta}_{(-i)} = 115,\underbrace{102, \cdots, 102}_{\times 9} \hspace{2cm}i = 1,2,\cdots,10\\
+  			  &\hat{\theta}_{(\bullet)} = \frac{1}{n}\sum_{i=1}^{10}\hat{\theta}_{(-i)} = 103.3\\
+  			  &\hat{\theta}_{JK} = n\hat{\theta} - (n-1)\hat{\theta}_{(\bullet)}\\
+  			  &\hspace{0.7cm}     = 10\times 102 - (10-1)\times 103.3\\
+  			  &\hspace{0.7cm}     = 90.3
+  			\end{align*}
+  			Natural range of human voice frequencies: (85, 255). The Jackknife estimation is very close to the fact.
+		% (c)
+			  \item Generalize the results. Assume a sample $X_1, \cdots, X_n$ of size n, where $X_1$, $X_2$ are the smallest two observations, and $X_{n-1}$, $X_n$ are the largest two. Derive equations for the jackknife estimators of the population minimum and maximum.
+            \begin{enumerate}[i.]
+              \item Population maximum\\
+              \vspace{-0.8cm}
+  			        \begin{align*}
+  			          &\hat{\theta} = max\{X_1, X_2, \cdots, X_{n-1}, X_n\} = X_n\\
+  			          &\hat{\theta}_{(-i)} = \underbrace{X_n, \cdots, X_n}_{\times (n-1)},X_{n-1} \hspace{2cm}i = 1,2,\cdots,n\\
+  			          &\hat{\theta}_{(\bullet)} = \frac{1}{n}\sum_{i=1}^{n}\hat{\theta}_{(-i)} = \frac{(n-1)X_n+X_{n-1}}{n}\\
+  			          &\hat{\theta}_{JK} = n\hat{\theta} - (n-1)\hat{\theta}_{(\bullet)}\\
+  			          &\hspace{0.7cm}    = n X_n - (n-1)\frac{(n-1)X_n+X_{n-1}}{n}\\
+  			          &\hspace{0.7cm}    = \frac{(2n-1)X_n-(n-1)X_{n-1}}{n}\\
+  			          &\hat{Bias} = \hat{\theta} - \hat{\theta}_{JK}\\
+  			          &\hspace{0.9cm}  = \frac{(X_{n-1}-X_{n})(n-1)}{n}
+  			        \end{align*}
+              Appling this Jackknife estimator to the tank example, we obtain an estimation of 103.2, which is not so accurate as the estimation, 109.2, proposed by the statisticians.\\
+  			      \item Population minimum\\
+              \vspace{-0.8cm}
+  			        \begin{align*}
+  			          &\hat{\theta} = min\{X_1, X_2, \cdots, X_{n-1}, X_n\} = X_1\\
+  			          &\hat{\theta}_{(-i)} = X_{2},\underbrace{X_1, \cdots, X_1}_{\times (n-1)} \hspace{2cm}i = 1,2,\cdots,n\\
+  			          &\hat{\theta}_{(\bullet)} = \frac{1}{n}\sum_{i=1}^{n}\hat{\theta}_{(-i)} = \frac{(n-1)X_1+X_{2}}{n}\\
+  			          &\hat{\theta}_{JK} = n\hat{\theta} - (n-1)\hat{\theta}_{(\bullet)}\\
+  			          &\hspace{0.7cm}    = n X_1 - (n-1)\frac{(n-1)X_1+X_{2}}{n}\\
+  			          &\hspace{0.7cm}    = \frac{(2n-1)X_1-(n-1)X_{2}}{n}\\
+  			          &\hat{Bias} = \hat{\theta} - \hat{\theta}_{JK}\\
+  			          &\hspace{0.9cm}  = \frac{(X_{2}-X_{1})(n-1)}{n}
+  			        \end{align*}
+            \end{enumerate}
+		\end{enumerate}
+
+% 2.
+  \item \textbf{(Jackknife)} One needs to estimate $\theta$, the frequency of days with 0 traffic accidents on a certain highway. The data are collected. During 40 days, there are 26 days with 0 accidents, 10 days with 1 accident, and 4 days with 2 accidents.\\
+  Statistician A estimates $\theta$ with a sample proportion $\hat{p} = 26/40 = 0.65$.\\
+  Statistician B argues that this method does not distinguish between the days with 1 accident and the days with 2 accidents, losing some valuable information. She suggests to model the number of accidents X by a Poisson distribution with parameter $\lambda$. Then we have $\theta = \boldmath{P}\{X = 0\} = exp(-\lambda)$. She estimates $\lambda$ with $\hat{\lambda} = \bar{X}$. Then $\hat{\theta} = exp(-\hat{\lambda})$. However, this estimator is biased.
+    \begin{enumerate}[(a)]
+    % (a)
+      \item Use jackknife to estimate the bias of $\hat{\theta}$.
+<<2.a>>=
+accident <- sample( c(rep(0,26),rep(1,10),rep(2,4)) )
+theta.hat <- function(x){return( exp( - mean(x) ) )} # original estimator
+jn <- jackknife( accident, theta.hat )
+jn$jack.bias # estimated bias
+@
+      The estimated bias of $\hat{\theta}$ is 0.003683256.
+    % (b)
+      \item Compute the jackknife estimator $\hat{\theta_{JK}}$ based on $\theta$.
+<<2.b>>=
+theta.hat(accident) - jn$jack.bias # jackknife estimator of theta
+@
+      $\hat{\theta_{JK}} = 0.6339449$.
+    % (c)
+      \item Apply the jackknife method to estimate the bias of $\hat{p}$ and compute the jackknife estimator $\hat{p_{JK}}$. Explain the result.
+<<2.c>>=
+p.hat <- function(x){return( mean(x == 0) )} # original estimator
+jn <- jackknife( accident, p.hat )
+jn$jack.bias # estimated bias
+p.hat(accident) - jn$jack.bias # jackknife estimator of p
+@
+      The estimated bias of $\hat{p}$ is 0. And the jackknife estimator $\hat{p_{JK}} = 0.65$. That means $\hat{p}$ is an unbiased estimator, so Jackknife cannot improve more.
+    % (d)
+      \item Now, let us estimate the standard deviation of $\hat{p}$. The standard formula is
+      $$s_{\hat{p}} = \hat{Std}(\hat{p}) = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} $$
+      Use jackknife to estimate the bias of $s_{\hat{p}}$. Propose an estimator with a smaller bias and calculate it from the given data. (Knowledge of Poisson distribution is not needed to solve this problem.)
+<<2.d>>=
+sp.hat <- function(x){ # original estimator
+  n <- length(x)
+  p <- mean(x == 0)
+  sp <- sqrt(p*(1-p)/n)
+  return(sp)
+  }
+jn <- jackknife( accident, sp.hat )
+jn$jack.bias # estimated bias
+sp.hat(accident) - jn$jack.bias# JK estimator
+@
+     The estimated bias of $s_{\hat{p}}= 0.03638723$ under Jackknife procedure. An estimator with smaller bias:
+     $$\hat{Std}(\hat{p})_{JK} = 0.03902828$$.
+    \end{enumerate}
+  % 3.
+  \item \textbf{(Cross-Validation. Pages 198-199, chap. 5, $\approx$\#5)}\\
+      Logistic regression is used to predict the probability of default using \texttt{income}, \texttt{balance}, and \texttt{student} on the \texttt{Default} data set in R package \texttt{ISLR}. Using
+      \begin{enumerate}[(a)]
+        \item the validation set approach,
+        \item leave-one-out cross-validation, and
+        \item K-fold cross-validation for $K = 100$ and $K = 1000$,
+        \end{enumerate}
+      estimate the test error of this logistic regression model and decide whether it will be improved when the dummy variable \texttt{student} is excluded from this prediction.
+
+      \begin{enumerate}[(a)]
+      % (a)
+        \item the validation set approach
+<<3.a>>=
+set.seed(666)
+n <- nrow(Default)
+train = sample( n, n/2 )
+reg = glm( default ~ income + balance + student,
+           family="binomial", data=Default[train,] )
+y.hat = predict( reg, Default, type="response" )
+pred <- ifelse(y.hat > 0.5, "Yes", "No")
+a.1 <- mean( Default$default[-train] != pred[-train] )
+# remove student
+reg = glm( default ~ income + balance,
+           family="binomial", data=Default[train,] )
+y.hat = predict( reg, Default, type="response" )
+pred <- ifelse(y.hat > 0.5, "Yes", "No")
+a.2 <- mean( Default$default[-train] != pred[-train] )
+# output
+data.frame('test error rate' = c('include student' = a.1, 'remove student' = a.2))
+@
+      After removing the student variable, the test error of the validation set approach slight decreases from 0.0244 to 0.0240. The model does not significantly improve.
+      % (b)
+        \item leave-one-out cross-validation
+<<3.b, eval= F>>=
+pred.loocv <- rep(NA, n)
+for (i in 1:n){
+  reg <- glm( default ~ income + balance + student,
+             family="binomial", data=Default[-i,] )
+  y.hat <- predict( reg, Default, type="response" )[i]
+  pred.loocv[i] <- ifelse(y.hat > 0.5, "Yes", "No")
+  }
+b.1 <- mean( Default$default != pred.loocv )
+# remove student
+for (i in 1:n){
+  reg <- glm( default ~ income + balance,
+             family="binomial", data=Default[-i,] )
+  y.hat <- predict( reg, Default, type="response" )[i]
+  pred.loocv[i] <- ifelse(y.hat > 0.5, "Yes", "No")
+  }
+b.2 <- mean( Default$default != pred.loocv )
+# output
+data.frame('test error rate' = c('include student' = b.1, 'remove student' = b.2)
+@
+<<3.b T, echo =FALSE>>=
+# b.1 = 0.0268, b.2 = 0.0263
+data.frame('test error rate' = c('include student' = 0.0268, 'remove student' = 0.0263))
+@
+      Under LOOCV procedure, removing the student variable would cause the test error to slight decrease from 0.0268 to 0.0263. The model does not improve much.
+
+      % (c)
+        \item K-fold cross-validation for $K = 100$ and $K = 1000$
+<<3c>>=
+# K = 100
+k <- 100
+pred.k.100 <- rep(NA, n)
+k.group <- split(1:n, sample(1:n, k))
+for (i in 1:k){
+  reg = glm( default ~ income + balance + student,
+             family="binomial", data=Default[-k.group[[i]],] )
+  y.hat = predict( reg, Default, type="response" )[k.group[[i]]]
+  pred.k.100[k.group[[i]]] <- ifelse(y.hat > 0.5, "Yes", "No")
+  }
+c1.1 = mean( Default$default != pred.k.100 )
+# remove student
+for (i in 1:k){
+  reg = glm( default ~ income + balance,
+             family="binomial", data=Default[-k.group[[i]],] )
+  y.hat = predict( reg, Default, type="response" )[k.group[[i]]]
+  pred.k.100[k.group[[i]]] <- ifelse(y.hat > 0.5, "Yes", "No")
+  }
+c1.2 = mean( Default$default != pred.k.100 )
+# k =1000
+k <- 1000
+pred.k.1000 <- rep(NA, n)
+k.group <- split(1:n, sample(1:n, k))
+for (i in 1:k){
+  reg = glm( default ~ income + balance + student,
+             family="binomial", data=Default[-k.group[[i]],] )
+  y.hat = predict( reg, Default, type="response" )[k.group[[i]]]
+  pred.k.1000[k.group[[i]]] <- ifelse(y.hat > 0.5, "Yes", "No")
+  }
+c2.1 = mean( Default$default != pred.k.1000 )
+# remove student
+for (i in 1:k){
+  reg = glm( default ~ income + balance,
+             family="binomial", data=Default[-k.group[[i]],] )
+  y.hat = predict( reg, Default, type="response" )[k.group[[i]]]
+  pred.k.1000[k.group[[i]]] <- ifelse(y.hat > 0.5, "Yes", "No")
+  }
+c2.2 = mean( Default$default != pred.k.1000 )
+# output
+data.frame( 'K' = c(100,100,1000,1000),
+            'student' = c('include','remove','include','remove'),
+            'test error rate' = c(c1.1,c1.2,c2.1,c2.2))
+@
+      When we use K-fold method with $K = 100$, removing the student variable will help decrease the test error rate from 0.0269 to 0.0263. With $K = 1000$, the test error rate will decrease from 0.0268 to 0.0263 if we remove the student variable. The model does not obviously improve.
+     \end{enumerate}
+  \end{enumerate}
+\end{document}
+
+
